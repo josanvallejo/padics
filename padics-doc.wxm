@@ -1,0 +1,1389 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 18.10.1 ] */
+/* [wxMaxima: title   start ]
+Computations with p-adic numbers in Maxima
+   [wxMaxima: title   end   ] */
+
+
+/* [wxMaxima: comment start ]
+Jose A Vallejo
+Facultad de Ciencias
+Universidad Autonoma de San Luis Potosi (Mexico)
+http://galia.fc.uaslp.mx/~jvallejo
+email:jvallejo@fc.uaslp.mx
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: comment start ]
+Abstract: This is just a first attempt to create a Maxima package for
+working with p-adic numbers. It is extremely ugly and slow, lacking 
+anything remotely resembling elegance or optimization, but at least
+it gives correct answers (for all those examples that I have been
+able to find in the literature).
+The current version is suitable for basic courses on the subject of p-adic
+analysis, and maybe for constructiong examples of some simple theoretical
+constructions.
+Topics covered are:
+1. p-adic norm and distance
+2. Finite-segment representations of Q_p (Hensel codes)
+3. p-adic arithmetic
+4. Conversion from Hensel codes to rational functions
+5. Newton's method and square roots in Q_p
+6. p-adic systems of linear equations
+
+REMARK: Some functions in the package make use of the commands
+firstn and lastn, which require a Maxima version 5.41 or higher.
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: section start ]
+Loading the package
+   [wxMaxima: section end   ] */
+
+
+/* [wxMaxima: comment start ]
+The most simple way to do it consists in putting a copy of padics.mac
+in your working directory. If a wxMaxima worksheet is opened from
+that directory, you can load the package with
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+load("padics.mac");
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+The other option is to do a global installation, putting a copy of
+padics.mac in /usr/share/maxima/5.42.1/share/contrib or its
+Windows equivalent. Then, load the package with the same command
+above.
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: section start ]
+p-adic norm
+   [wxMaxima: section end   ] */
+
+
+/* [wxMaxima: comment start ]
+We can compute the p-adic order of a rational number with padicorder.
+The syntax is padicorder(rational,prime):
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicorder(144,3);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicorder(17,3);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+We follow the convention that the order of 0 is always (real) infinity:
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+makelist(padicorder(0,i),i,[2,3,5,7,11,13]);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicorder(3/10,5);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicorder(36015/88,7);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+Notice that the p-adic order is an even function:
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicorder(-3/10,5);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+The reduction to the canonical form of a rational number
+                            r=a/b=p^porder(r) a'/b'
+can be achieved with padiccan. The result has the form of a list 
+[p^porder(r),a'/b']
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padiccan(0.234,2);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padiccan(0,3);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+The p-adic norm of a rational numer is computed by padicnorm:
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+makelist(padicnorm(0,j),j,[2,3,5,7,11,13,17]);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicnorm(17,17);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicnorm(144,3);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicnorm(12,5);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+makelist(padicnorm(162/13,k),k,[3,13]);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+The next example comes from http://mathworld.wolfram.com/p-adicNorm.html
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+makelist(padicnorm(140/297,k),k,[2,3,5,7,11]);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+Another example, this one from www.asiapacific-mathnews.com/03/0304/0001_0006.pdf
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+makelist(padicnorm(63/550,k),k,[2,3,5,7,11,13]);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicnorm(0.234,2);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+Let us check the triangle equality:
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicnorm(3/10,5);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicnorm(40,5);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicnorm(3/10-40,5);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+The next examples come from https://www.sangakoo.com/en/unit/p-adic-distance
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicnorm(10/12,2);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicnorm(10/12,5);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicnorm(10/12,7);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+Of course, once we have a norm available, we can define the
+associated p-adic distance, here denoted padicdist:
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicdist(2,28814,7);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicdist(2,3,7);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicdist(2166^2,2,7);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicdist(3,3+29^4,29);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+The next example comes from https://www.sangakoo.com/en/unit/p-adic-distance
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicdist(82,1,3);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: section start ]
+p-adic expansions (Hensel codes)
+   [wxMaxima: section end   ] */
+
+
+/* [wxMaxima: comment start ]
+The only explicit representation we can get are those of rational numbers
+(periodic p-adic expansions). Here we consider Hensel (pseudo)codes,
+which basically are truncations of the p-adic expansions to a given order.
+The output has the form [[exponent],mantissa], and the algorithm used
+here is based on the one proposed by G. Bachman in [1].
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+hensel(5/7,7,7);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+hensel(-84,7,9);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+hensel(8/3,5,9);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+hensel(3/4,5,4);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+hensel(2/15,5,7);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+hensel(7/6,5,4);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+hensel(2/7,5,4);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+hensel(1/12,5,7);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+hensel(5/8,5,4);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+hensel(1/2,5,4);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+hensel(1/3,5,4);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+hensel(1/4,5,4);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+hensel(1/4,5,7);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+hensel(1/25,5,4);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+hensel(-7/8,3,5);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+The command nicehensel displays the result in the form commonly
+found in textbooks and expository works (this form has the drawback
+that, when p>7, is is impossible to distinguish between the number 11
+and two consecutive 1's, so it will not be used in what follows), that is, 
+something like
+                                    r = a_{-e}...a_{-1}.a_0a_1a_2...
+where e is the order of r.
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+nicehensel(8/3,5,9);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+nicehensel(8/75,5,9);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+nicehensel(3/4,5,4);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+nicehensel(2/15,5,7);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+nicehensel(1/3,5,7);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+nicehensel(-1/3,5,7);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+nicehensel(5/1,5,4);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+nicehensel(25,5,4);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+nicehensel(2/7,5,4);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+Let us compare this with the table presented in [2]
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+h[i,j]:=nicehensel(i/j,5,4)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+genmatrix(h,17,17);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: section start ]
+Arithmetic of p-adics
+   [wxMaxima: section end   ] */
+
+
+/* [wxMaxima: comment start ]
+The basic functions are implemented as:
+* padicsum (sum, addition)
+* padicsubstract (difference, substraction)
+* padicmult (product, multiplication)
+* padivdiv (division, quotient)
+The syntax is quite evident: each function takes the arguments
+                        (operand1,operand2,p)
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: comment start ]
+Some test numbers:
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+l1:hensel(3/10,5,4);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+l2:hensel(1/2,5,4);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicsum(l1,l2,5);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+Notice that the Hensel code for the sum 3/10+1/1 corresponds to 4/5:
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+hensel(4/5,5,4);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+Also, notice that a conequence of using a finite segment representation is that
+adding up a really small number with a relly big one just gives the bigger:
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicsum([[2],2,5,1,5],[[-3],3,3,3,2],7);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+Another test (this is an example in [2]) with p=5 and r=9
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+h1:hensel(2/3,5,9);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+h2:hensel(5/6,5,9);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicsum(h1,h2,5);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+Let us check the following example in [2]:
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicsubstract(h1,h2,5);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+And those of [3]:
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicsubstract(hensel(3/4,5,4),hensel(3/2,5,4),5);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+An example on multiplication, also from [3]
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+t1:hensel(4/15,5,4);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+t2:hensel(5/2,5,4);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicmult(t1,t2,5);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+Another example from [2]:
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicmult(h1,h2,5);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+Example from [4]:
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+al:hensel(1/4,5,4);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+be:hensel(1/3,5,4);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicmult(al,be,5);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+The function normalhensel normalizes the Hensel code so that the
+first digit after the dot is not zero:
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+normalhensel([[-1],0,0,1,2,3]);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+It is internally used by the function for computing divisions. Our first
+example is a trivial one:
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicdiv([[0],4,0,0,0,0,0,0],[[0],2,0,0,0,0,0,0],7);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+The next example is from [2]:
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+dividend:[[0],4,1,3,1,3,1,3];
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+divisor:[[0],3,4,2,4,2,4,2];
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicdivi(dividend,divisor,5);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+d1:[[0],2,1,1,1];
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+d2:[[-1],1,1,0,0];
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicdiv(d1,d2,5);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicdiv([[0],4,3,3,3],[[0],0,1,4,0],5);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+This is the example presented in [3]: 1/4/(1/2+1/3)+1/25
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicsum(padicdiv([[0],4,3,3,3],padicsum([[0],3,2,2,2],[[0],2,3,1,3],5),5),[[-2],1,0,0,0],5);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+A quick check that the answer is correct:
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+1/4/(1/2+1/3)+1/25;
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+hensel(17/50,5,4);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+Another example, from [4]:
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+alf:hensel(8/9,5,4);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+bet:hensel(1/2,5,4);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicdiv(alf,bet,5);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+From [6]:
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+hensel(1/333333,5,27);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+time(%);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+Reference [6] states that 3 seconds were required for this computation,
+using a C++ library, in 2005.
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: section start ]
+From Hensel codes to rational numbers
+   [wxMaxima: section end   ] */
+
+
+/* [wxMaxima: comment start ]
+Passing from Hensel codes to equivalent rational numbers in Q_p
+requires the use of the appropriate Farey fractions. A function for
+generating the Farey fractions I_n is farey:
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+farey(17);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+time(%);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+The package implements the algorithm by Gregory and Krishnamurthy
+described in the book [7]. We have added a few cases detected
+independently to give cleaner results. For instance, cases such as 
+[[m],a0,0,0,0,...],[[m],a0,p-1,p-1,p-1,...] or [[m],a0,a1,...,ak,0,0,...,0s]
+with s>k.
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: comment start ]
+Some trivial examples:
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+henseltofarey([[2],3,0,0,0,0,0,0,0],7);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+henseltofarey([[0],4,4,4,4,4,4,4],5);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+henseltofarey([[0],3,3,3,3,3,3,3],5);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+henseltofarey([[0],0,0,0,0,0,0],5);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+From [6] (pg 12)
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+henseltofarey([[0],2,3,1,5],7);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+From [7] (pp. 100 and ff)
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+henseltofarey([[0],0,2,4,1],5);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+henseltofarey([[1],2,4,1,4],5);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+henseltofarey([[-1],3,2,2,2],5);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+henseltofarey([[0],3,2,2,2],5);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+henseltofarey([[0],2,3,1,3],5);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+henseltofarey([[0],0,6,0,6],7);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+A quick check:
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+hensel(1/3,5,4);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+hensel(-7/8,7,4);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+Example from [11]:
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+henseltofarey([[0],2,2,1,0],5);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+henseltofarey([[0],1,2,1,4],5);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+Examples from the paper [8]:
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+henseltofarey([[0],2,2,1,0],5);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+henseltofarey([[0],2,2,3,4],5);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+henseltofarey([[0],4,2,3,4],5);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+henseltofarey([[0],1,1,0,0,1,0],3);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+henseltofarey([[0],1,2,1,4],5);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+henseltofarey([[0],3,4,2,3],5);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: section start ]
+Hensel codes of square roots
+   [wxMaxima: section end   ] */
+
+
+/* [wxMaxima: comment start ]
+Now, suppose we want to compute the square root of 2 with p=7.
+We will follow [9] for that.
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: comment start ]
+An integer q is called a quadratic residue mod p if there exists an
+integer x such that  x^2 =q mod p.
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: comment start ]
+Remark: If p=2, every integer is a quadratic residue. If p is a prime
+different from 2, there are (p-1)/2 residues and (p-1)/2 non-residues
+in F_p-{0} (that is, the multiplicative group of F_p or F^*_p).
+As a consequence of the reciprocity law:
+a) If p=1 mod 4, then -1 is a quadratic residue mod p.
+b) I p=3 mod 4, then -1 is a non residue mod p.
+Notice that every prime is equivalent to 1 or 3 mod 4.
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: comment start ]
+Euler's criterion for quadratic reciprocity states that (given a in Z
+and p an odd prime) the Legendre symbol evaluates to (a|p)=a^(p-1)/2. 
+And this equals 1 if a is a quadratic residue and -1 if it is not.
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: comment start ]
+First, we introduce a function to determine whether a given integer
+is a quadratic residue modulo p or not:
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+sqrtmod(2,5);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+Thus n=2 is not a quadratic residue modulo p=5. But it is modulo p=7:
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+sqrtmod(2,7);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+If n is a quadratic residue modulo p with root x, then another root is
+given by the y such that y=-x mod p. We compute the padic roots with
+Newton's method, and the command padicsqrt --whose syntax is
+padicsqrt(number,p)-- admits an optional argument fixing the number
+of iterations to be done, as in padicsqrt(number,p,iterations).
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicsqrt(2,7);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+We can get the corresponding Hensel of the roots codes through
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+map(lambda([u],hensel(u,7,9)),%);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+Another example: the square root of 7 in Q_3 (from [9])
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicsqrt(7,3,3);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+The first fraction contains 3x2=6 exact digits to determine the square
+root of 7 in Q_3. To get its corresponding Farey sequence it does not
+make sense to take more than 6 digits. Hence we do the following:
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+map(lambda([u],hensel(u,3,6)),%);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+henseltofarey(%[1],3);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+The result is not exactly the rational we started with, but it is very close
+in Q_3:
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicdist(977/368,1/25,3);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+More examples:
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicsqrt(6,5)[1];
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+hensel(%,5,4);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+The results can be compared against those given in
+http://www.numbertheory.org/php/p-adic.html
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicsqrt(25,7);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+map(lambda([u],hensel(u,7,8)),%);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+Example from [10]:
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicsqrt(-2,3);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+hensel(%[1],3,8);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+Again an example from [9], to see the influence of the choice of initial condition
+in Newton's iteration (notice how we fix the number of iterations as 3 here):
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicsqrt(1,3,3);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+map(lambda([u],hensel(u,3,8)),%);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+map(lambda([u],henseltofarey(u,3)),%);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: section start ]
+Solving p-adic systems of linear equations
+   [wxMaxima: section end   ] */
+
+
+/* [wxMaxima: comment start ]
+This is a topic of fundamental importance in applications. The algorithm
+implemented here is Gaussian reduction.
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: comment start ]
+To solve the problem Ax=b, we have the commands padicgauss and
+padicbacksub. The first one triangularizes the system, and its syntax
+is padicgauss(B,p), where B=A|b is the augmented matrix of the system
+(that is, the coefficient matrix A augmented with the column b of non
+homogeneous terms). The resulting triangular matrix is processed
+by padicbacksub to obtain the Hensel codes of the solution.
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: comment start ]
+The following examples are from [4]:
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+D:matrix([3,1,3,16],[1,3,1,8],[1,1,3,12]);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicgauss(D,11);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicbacksub(%,11);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+Converting toFarey fractions we get the rational form of the solutions:
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+map(lambda([x],henseltofarey(x,11)),%);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+Another example:
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+C:matrix([2,2,-1,5],[-3,0,2,-5],[4,-5,-1,0]);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicgauss(C,5);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicbacksub(%,5);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+We convert the solution to rational (Farey) expressions:
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+map(lambda([x],henseltofarey(x,5)),%);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+The examples above were trivial, the only intention was to show
+how the usual (rational) results are recovered within p-adic algebra.
+Now we consider more advanced examples, with some matrices that
+are highly unstable in rational arithmetic. 
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+E:matrix(
+[10,9,8,7,6,5,4,3,2,1,1],
+[9,9,8,7,6,5,4,3,2,1,2],
+[8,8,8,7,6,5,4,3,2,1,-5],
+[7,7,7,7,6,5,4,3,2,1,9],
+[6,6,6,6,6,5,4,3,2,1,15],
+[5,5,5,5,5,5,4,3,2,1,1],
+[4,4,4,4,4,4,4,3,2,1,6],
+[3,3,3,3,3,3,3,3,2,1,14],
+[2,2,2,2,2,2,2,2,2,1,3],
+[1,1,1,1,1,1,1,1,1,1,1]
+);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicgauss(E,8209);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+time(%);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicbacksub(%th(2),8209);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+map(lambda([x],henseltofarey(x,8209)),%);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+Hibert matrices are known for their bad condition number. This is
+a good opportunity to appreciate the advantages of working with
+p-adics:
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+F:addcol(hilbert_matrix(5),[137/60,87/60,459/420,743/840,1875/2520]);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicgauss(F,8209);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+time(%);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicbacksub(%th(2),8209);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+map(lambda([x],henseltofarey(x,8209)),%);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+There will be a lot of situatons where our simple heuristis for choosing
+t will lead to bad values. For those cases, one can manually choose t
+using the alternative function padicgauss2. Below we choose 8 digits:
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicgauss2(E,8209,8);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicbacksub(%,8209);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+map(lambda([x],henseltofarey(x,8209)),%);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+Let us see how p-adic arithmetics deal with the high condition number of
+Hilbert matrices and the associated instabilities:
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+M1:addcol(hilbert_matrix(5),makelist(j,j,1,5));
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+M2:addcol(hilbert_matrix(5),makelist(j+29^(3+random(6)),j,1,5));
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+Notice that the non-homogeneous coefficients in M2 are really close to the initial ones in M1:
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+makelist(padicdist(M1[j][6],M2[j][6],29),j,1,length(M1));
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicgauss2(M1,29,6);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicbacksub(%,29);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+map(lambda([x],henseltofarey(x,29)),%);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicgauss2(M2,29,6);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+padicbacksub(%,29);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+map(lambda([x],henseltofarey(x,29)),%);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+The solutions of the original system and the perturbed one, are quite close
+(in the p-adic distance, of course):
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+makelist(padicdist(%[j],%th(4)[j],29),j,1,length(%));
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+For comparison, let us see how things work in the purely rational case:
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+A:hilbert_matrix(5)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+X:makelist(x[k],k,1,5)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+B1:makelist(k,k,1,5)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+B2:makelist(rat(k+random(0.01)),k,1,5)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+for j:1 thru 5 do eq1[j]:sum(A[j,k]*X[k],k,1,5)=B1[j]$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+for j:1 thru 5 do eq2[j]:sum(A[j,k]*X[k],k,1,5)=B2[j]$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+solve(makelist(eq1[j],j,1,5),X);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+solve(makelist(eq2[j],j,1,5),X),numer;
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+Those solutions are far away from each other in the usual absolute
+value distance. This example is a striking evidence of the better stability
+properties of p-adic arithmetic over the traditional rational one.
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: section start ]
+References
+   [wxMaxima: section end   ] */
+
+
+/* [wxMaxima: comment start ]
+[1] G. Bachman: Introduction to p–adic Numbers and Valuation Theory, 
+Academic Press, New York, NY, 1964.
+[2] C. K. Koc: A Tutorial on p-adic Arithmetic. Oregon State University. 
+Technical Report, April 2002. Available at
+http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.81.2931&rep=rep1&type=pdf
+[3] C. Limongelli and R. Pirastu: p-adic Arithmetic and Parallel Symbolic
+Computation: An Implementation for Solving Linear Systems.
+Computers and Artificial Intelligence 14 n. 1 (1996) 35-62.
+[4] E. V. Krishnamurty, T. Mahadeva Rao and K. Subramanian: p-Adic
+arithmetic procedures for exact matrix computations. Proc, Indian Acad.
+Sci., Vol. 82A, No. 5 (1975) 165-175.
+[5] C. Limongelli: On an efficient algorithm for big rational number
+computations by parallel p-adics. J. Symbolic Computation 15 (1993)
+181-197.
+[6] C. Lu: A Computational Library Using p-adic Arithmetic for Exact
+Computation With Rational Numbers in Quantum Computing. Final 
+Report (Grant #FA9550-05-1-0363) Towson University, 2005.
+[7] R. T. Gregory and E. V. Krishnamurthy: Methods and Applications
+of Error-Free Computation. Springer Verlag, 1984.
+[8] V. E. Krishnamurthy : On the Conversion of Hensel Codes to Farey
+Rationals. IEEE Transactions on computers, vol c-32, No. 4, April 1983
+[9] K. Conrad: Hensel's Lemma. Available at
+https://kconrad.math.uconn.edu/blurbs/gradnumthy/hensel.pdf
+[10] J. E. Cremona: Introduction to Number Theory Lecture Notes, 2018.
+Available at
+http://homepages.warwick.ac.uk/staff/J.E.Cremona/courses/MA257/ma257.pdf
+[11] A. Vimawala: p-Adic Arithmetic Methods for Exact Computations
+of Rational Numbers. School of Electrical Engineering and Computer Science,
+Oregon State University. Available at:
+http://cs.ucsb.edu/koc/cs290g/project/2003/vimawala.pdf
+   [wxMaxima: comment end   ] */
+
+
+
+/* Old versions of Maxima abort on loading files that end in a comment. */
+"Created with wxMaxima 18.10.1"$

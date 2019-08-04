@@ -18,4 +18,4 @@ Topics covered are:
 6. p-adic systems of linear equations
 
 **Remark**: Some functions in the package make use of the commands
-firstn and lastn, which require a Maxima version 5.41 or higher.
+`firstn` and `lastn`, which require a Maxima version 5.41 or higher.

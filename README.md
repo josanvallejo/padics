@@ -1,5 +1,5 @@
 # padics
-A package for computing with p-adic numbers in Maxima
+## A package for computing with p-adic numbers in Maxima
 
 This is just a first attempt to create a Maxima package for
 working with p-adic numbers. It is extremely ugly and slow, lacking 
@@ -17,5 +17,5 @@ Topics covered are:
 5. Newton's method and square roots in Q_p
 6. p-adic systems of linear equations
 
-REMARK: Some functions in the package make use of the commands
+**Remark**: Some functions in the package make use of the commands
 firstn and lastn, which require a Maxima version 5.41 or higher.

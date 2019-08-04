@@ -7,7 +7,7 @@ anything remotely resembling elegance or optimization, but at least
 it gives correct answers (for all those examples that I have been
 able to find in the literature).
 The current version is suitable for basic courses on the subject of p-adic
-analysis, and maybe for constructiong examples of some simple theoretical
+analysis, and maybe for constructing examples illustrating simple theoretical
 constructions.
 Topics covered are:
 * p-adic norm and distance

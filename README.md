@@ -11,10 +11,10 @@ analysis, and maybe for constructiong examples of some simple theoretical
 constructions.
 Topics covered are:
 * p-adic norm and distance
-* Finite-segment representations of Q_p (Hensel codes)
+* Finite-segment representations of Q<sub>p</sub> (Hensel codes)
 * p-adic arithmetic
 * Conversion from Hensel codes to rational functions
-* Newton's method and square roots in Q_p
+* Newton's method and square roots in Q<sub>p</sub>
 * p-adic systems of linear equations
 
 **Remark**: Some functions in the package make use of the commands

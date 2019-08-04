@@ -1,5 +1,5 @@
 # padics
-## A package for computing with p-adic numbers in Maxima
+## A package for computing with p-adic numbers in Maxima CAS
 
 This is just a first attempt to create a Maxima package for
 working with p-adic numbers. It is extremely ugly and slow, lacking 

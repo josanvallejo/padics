@@ -19,3 +19,15 @@ Topics covered are:
 
 **Remark**: Some functions in the package make use of the commands
 `firstn` and `lastn`, which require a Maxima version 5.41 or higher.
+
+To install the package, simply copy `padics.mac` to your working
+directory, or make a global installation by copying the file to
+`/usr/share/maxima/5.42.1/share/contrib` or its Windows/MacOS equivalent.
+
+The package can be loaded inside a Maxima session by typing
+```
+load("padics.mac");
+```
+
+The file `padics-doc.wxm` contains a wxMaxima worksheet describing the
+use of the commands in the package.

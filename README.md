@@ -29,5 +29,4 @@ The package can be loaded inside a Maxima session by typing
 load("padics.mac");
 ```
 
-The file `padics-doc.wxm` contains a wxMaxima worksheet describing the
-use of the commands in the package.
+The file `padics-doc.pdf` describes a Maxima session using the commands in the package.

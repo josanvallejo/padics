@@ -13,7 +13,7 @@ Topics covered are:
 * p-adic norm and distance
 * Finite-segment representations of **Q**<sub>p</sub> (Hensel codes)
 * p-adic arithmetic
-* Conversion from Hensel codes to rational functions
+* Conversion from Hensel codes to rational functions (through Farey fractions)
 * Newton's method and square roots in **Q**<sub>p</sub>
 * p-adic systems of linear equations
 

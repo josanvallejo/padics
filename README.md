@@ -22,7 +22,7 @@ Topics covered are:
 
 To install the package, simply copy `padics.mac` to your working
 directory, or make a global installation by copying the file to
-`/usr/share/maxima/5.42.1/share/contrib` or its Windows/MacOS equivalent.
+`/usr/share/maxima/5.42.1/share/contrib` (or its Windows/MacOS equivalent).
 
 The package can be loaded inside a Maxima session by typing
 ```

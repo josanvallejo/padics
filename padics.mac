@@ -24,10 +24,20 @@ Topics covered are:
 6. p-adic systems of linear equations
 
 REMARK: Some functions in the package make use of the commands
-firstn and lastn, which require a Maxima version 5.41 or higher
+firstn and lastn, which were introduced in Maxima 5.39.
+If firstn or lastn are not detected as built-in functions,
+equivalent functions are defined here.
 */
 
 ratprint:false$
+
+if ?fboundp (firstn) = false
+  then (print ("padics: no built-in function 'firstn'; I'll define my own."),
+        firstn (l, n) := block ([m: length(l)], if n >= m then l else rest (l, n - m)));
+
+if ?fboundp (lastn) = false
+  then (print ("padics: no built-in function 'lastn'; I'll define my own."),
+        lastn (l, n) := block ([m: length(l)], if n >= m then l else rest (l, m - n)));
 
 /*
 Let us first define the p-adic order of an integer

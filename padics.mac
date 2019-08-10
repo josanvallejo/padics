@@ -465,7 +465,7 @@ xreduce(lambda([[x]],padic_sum(x[1],x[2],p)),pp)
 The function for backsubstitution
 */
 
-padicbacksub(M,p):=block([n:length(M),t:length(rest(flatten(M[1,1]))),x,ratprint:false],local(x),
+padic_backsub(M,p):=block([n:length(M),t:length(rest(flatten(M[1,1]))),x,ratprint:false],local(x),
 x:makelist(cons([0],makelist(0,k,1,t)),j,1,n),
 x[n]:padic_divide(M[n][n+1],M[n][n],p),
 for i:n-1 thru 1 step -1 do

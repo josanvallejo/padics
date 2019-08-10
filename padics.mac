@@ -365,17 +365,17 @@ Functions for converting Hensel codes to
 Farey fractions
 */
 
-zerodetect(ll):=is(equal(sublist_indices(rest(ll),lambda([x],is(not(equal(x,0))))),[1]))$
+hensel_zerodetect(ll):=is(equal(sublist_indices(rest(ll),lambda([x],is(not(equal(x,0))))),[1]))$
 
-pdetect(ll,p):=is(equal(unique(rest(ll,2)),[p-1]))$
+hensel_pdetect(ll,p):=is(equal(unique(rest(ll,2)),[p-1]))$
 
 henseltofareyaux(lista,p):=block(
     [normli:normalize_hensel(lista),lnormli,ll:rest(lista),r:length(lista)-1,m,N,k,a,b,q,c,soln:0],
     local(a,b,q,c),
 lnormli:length(normli),
 if is(equal(unique(rest(lista)),[0])) then return(0) elseif
-zerodetect(lista) then return(second(lista)*p^(first(first(lista)))) elseif
-pdetect(lista,p) then return(second(lista)-p) elseif
+hensel_zerodetect(lista) then return(second(lista)*p^(first(first(lista)))) elseif
+hensel_pdetect(lista,p) then return(second(lista)-p) elseif
     is(equal(unique(lastn(rest(lista),ceiling(r/2))),[0])) then return(sum(rest(lista)[k]*p^(k-1),k,1,floor(r/2))) else (
 m:p^r,
 N:ceiling(sqrt((m-1)/2)),

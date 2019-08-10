@@ -197,7 +197,7 @@ tmp[1]:tmp[1]+1,
 cons(first(h),tmp)
 )$
 
-padicsubstract(l1,l2,p):=padic_sum(l1,henselcomp(l2,p),p)$
+padic_subtract(l1,l2,p):=padic_sum(l1,henselcomp(l2,p),p)$
 
 redu(p,u,ll):=block([tmp1,tmp2,rmdr,carry,tot,token],
 	tmp1:map(lambda([z],divide(z,p)),u*ll),
@@ -254,7 +254,7 @@ tmp[1]:tmp[1]+1,
 tmp
 )$
 
-padicsubstractb(l1,l2,p):=block([rmdrs,carry,tot,token],
+padic_subtractb(l1,l2,p):=block([rmdrs,carry,tot,token],
 rmdrs:map(lambda([x],divide(x,p)),l1+henselcompb(l2,p)),
 carry:cons(0,rest(map(first,rmdrs),-1)),
 tot:map(second,rmdrs)+carry,
@@ -291,14 +291,14 @@ counter:1,
 tmp:[],
 par:mod(invd0*rest(l1)[counter],p),
 tmp:endcons(par,tmp),
-rmd:padicsubstractb(rest(l1),rest(multb(par,rest(l2),p),1-counter),p),
+rmd:padic_subtractb(rest(l1),rest(multb(par,rest(l2),p),1-counter),p),
 token:apply("+",rmd),
 if is(equal(token,0)) then return(cons([quot],  append(tmp,makelist(0,k,1,length(l2)-2))  )) else do
 (counter:counter +1,
 while (is(not(equal(token,0)))) do
     (
     par:mod(invd0*rmd[counter],p),
-    rmd:padicsubstractb(rmd,flatten(cons(makelist(0,k,1,counter-1),rest(multb(par,rest(l2),p),1-counter))),p),
+    rmd:padic_subtractb(rmd,flatten(cons(makelist(0,k,1,counter-1),rest(multb(par,rest(l2),p),1-counter))),p),
     token:apply("+",rmd),
     tmp:endcons(par,tmp),
     counter:counter+1
@@ -469,7 +469,7 @@ padicbacksub(M,p):=block([n:length(M),t:length(rest(flatten(M[1,1]))),x,ratprint
 x:makelist(cons([0],makelist(0,k,1,t)),j,1,n),
 x[n]:padicdiv(M[n][n+1],M[n][n],p),
 for i:n-1 thru 1 step -1 do
-    x[i]:padicdiv(padicsubstract(M[i][n+1],padicdotp(rest(list_matrix_entries(row(M,i)),-1),x,p),p),M[i][i],p),
+    x[i]:padicdiv(padic_subtract(M[i][n+1],padicdotp(rest(list_matrix_entries(row(M,i)),-1),x,p),p),M[i][i],p),
 x
 )$
 
@@ -516,7 +516,7 @@ while is((h<m) and (k<n)) do (
     for i:h+1 thru m do (
             f:padicdiv(A[i,k],A[h,k],p),
             A[i,k]:cons([0],makelist(0,j,1,t)),
-            for j:k+1 thru n do A[i,j]:padicsubstract(A[i,j],padicmult(f,A[h,j],p),p)
+            for j:k+1 thru n do A[i,j]:padic_subtract(A[i,j],padicmult(f,A[h,j],p),p)
             ),
     h:h+1,
     k:k+1,
@@ -545,7 +545,7 @@ while is((h<m) and (k<n)) do (
     for i:h+1 thru m do (
             f:padicdiv(A[i,k],A[h,k],p),
             A[i,k]:cons([0],makelist(0,j,1,t)),
-            for j:k+1 thru n do A[i,j]:padicsubstract(A[i,j],padicmult(f,A[h,j],p),p)
+            for j:k+1 thru n do A[i,j]:padic_subtract(A[i,j],padicmult(f,A[h,j],p),p)
             ),
     h:h+1,
     k:k+1,

@@ -164,7 +164,7 @@ differences, products and divisions. Lots of
 auxiliary functions there
 */
 
-padicsum(l1,l2,p):=block([pp,gg,mm,n1,n2,rmdrs,carry,tot,token],
+padic_sum(l1,l2,p):=block([pp,gg,mm,n1,n2,rmdrs,carry,tot,token],
 pp:apply(min,append(l1[1],l2[1])),
 if (l1[1][1]>=l2[1][1]) then (gg:l1,mm:l2) else (gg:l2,mm:l1),
 if is(not(equal(gg[1][1],mm[1][1]))) then
@@ -197,7 +197,7 @@ tmp[1]:tmp[1]+1,
 cons(first(h),tmp)
 )$
 
-padicsubstract(l1,l2,p):=padicsum(l1,henselcomp(l2,p),p)$
+padicsubstract(l1,l2,p):=padic_sum(l1,henselcomp(l2,p),p)$
 
 redu(p,u,ll):=block([tmp1,tmp2,rmdr,carry,tot,token],
 	tmp1:map(lambda([z],divide(z,p)),u*ll),
@@ -218,7 +218,7 @@ redu(p,u,ll):=block([tmp1,tmp2,rmdr,carry,tot,token],
 	    tot
 )$
 
-padicsumb(l1,l2,p):=block([rmdrs,carry,tot,token],
+padic_sumb(l1,l2,p):=block([rmdrs,carry,tot,token],
 rmdrs:map(lambda([x],divide(x,p)),l1+l2),
 carry:cons(0,rest(map(first,rmdrs),-1)),
 tot:map(second,rmdrs)+carry,
@@ -243,7 +243,7 @@ lon:length(bigl),
 tmp[1]:bigl[1],
 for k:2 thru lon do
 (
-tmp[k]:padicsumb(tmp[k-1],bigl[k],p)
+tmp[k]:padic_sumb(tmp[k-1],bigl[k],p)
 ),
 cons([pp],tmp[lon])
 )$
@@ -458,7 +458,7 @@ A substitute of `innerproduct' for p-adics
 
 padicdotp(l1,l2,p):=block([pp],local(pp),
 pp:makelist(padicmult(l1[i],l2[i],p),i,1,length(l1)),
-xreduce(lambda([[x]],padicsum(x[1],x[2],p)),pp)
+xreduce(lambda([[x]],padic_sum(x[1],x[2],p)),pp)
 )$
 
 /*

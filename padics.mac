@@ -191,13 +191,13 @@ while (is(not(equal(token,0)))) do
 cons([pp],tot)
 )$
 
-henselcomp(h,p):=block([tmp],
+hensel_complement(h,p):=block([tmp],
 tmp:(p-1)-rest(h),
 tmp[1]:tmp[1]+1,
 cons(first(h),tmp)
 )$
 
-padic_subtract(l1,l2,p):=padic_sum(l1,henselcomp(l2,p),p)$
+padic_subtract(l1,l2,p):=padic_sum(l1,hensel_complement(l2,p),p)$
 
 redu(p,u,ll):=block([tmp1,tmp2,rmdr,carry,tot,token],
 	tmp1:map(lambda([z],divide(z,p)),u*ll),
@@ -248,14 +248,14 @@ tmp[k]:padic_sumb(tmp[k-1],bigl[k],p)
 cons([pp],tmp[lon])
 )$
 
-henselcompb(h,p):=block([tmp],
+hensel_complementb(h,p):=block([tmp],
 tmp:(p-1)-h,
 tmp[1]:tmp[1]+1,
 tmp
 )$
 
 padic_subtractb(l1,l2,p):=block([rmdrs,carry,tot,token],
-rmdrs:map(lambda([x],divide(x,p)),l1+henselcompb(l2,p)),
+rmdrs:map(lambda([x],divide(x,p)),l1+hensel_complementb(l2,p)),
 carry:cons(0,rest(map(first,rmdrs),-1)),
 tot:map(second,rmdrs)+carry,
 token:apply("+",carry),

@@ -434,7 +434,7 @@ y=-x mod p. We compute the padic roots with Newton's
 method 
 */
 
-padicsqrt(n,p,[k]):=block([tmp,iter],local(iter1,iter2),
+padic_sqrt(n,p,[k]):=block([tmp,iter],local(iter1,iter2),
 tmp:sqrtmod(n,p),
 if is(stringp(tmp)) then return("There does not exist a square root")
 elseif is(equal(length(k),0)) then

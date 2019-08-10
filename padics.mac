@@ -369,7 +369,7 @@ hensel_zerodetect(ll):=is(equal(sublist_indices(rest(ll),lambda([x],is(not(equal
 
 hensel_pdetect(ll,p):=is(equal(unique(rest(ll,2)),[p-1]))$
 
-henseltofareyaux(lista,p):=block(
+hensel_to_fareyaux(lista,p):=block(
     [normli:normalize_hensel(lista),lnormli,ll:rest(lista),r:length(lista)-1,m,N,k,a,b,q,c,soln:0],
     local(a,b,q,c),
 lnormli:length(normli),
@@ -405,11 +405,11 @@ miserably. We take this fact into account in the final
 version below:
 */
 
-henseltofarey(lista,p):=block([m:first(flatten(lista))],
+hensel_to_farey(lista,p):=block([m:first(flatten(lista))],
 if is(equal(m,0)) then  
-    henseltofareyaux(lista,p)
+    hensel_to_fareyaux(lista,p)
 else
-    p^m*henseltofareyaux(append([[0]],rest(lista)),p) 
+    p^m*hensel_to_fareyaux(append([[0]],rest(lista)),p) 
 )$
 
 /*

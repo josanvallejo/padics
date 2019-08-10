@@ -113,7 +113,7 @@ p^(qq-pp)
 The associated p-adic distance:
 */
 
-padicdist(x,y,p):=padic_norm(x-y,p)$
+padic_distance(x,y,p):=padic_norm(x-y,p)$
 
 /*
 Construction of Hensel (pseudo)codes, which basically are

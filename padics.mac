@@ -82,7 +82,7 @@ Reduction to the canonical form of a rational number
 The result has the form of a list [p^porder(r),a'/b']
 */
 
-padiccan(r,p):=block([numerat,denomin,pp,qq,dd],
+padic_canonical(r,p):=block([numerat,denomin,pp,qq,dd],
 if is(equal(r,0)) then [1,0] else
 (
 numerat:fix(ratnum(r)),
@@ -122,7 +122,7 @@ The output has the form [[exponent],mantissa]
 */
 
 hensel(r,p,N):=block([tmp,ee,c,d,a,aux],local(c,d,a,aux),
-tmp:padiccan(r,p),
+tmp:padic_canonical(r,p),
 ee:fix(radcan(log(tmp[1])/log(p))),
 c[1]:fix(ratnum(tmp[2])),
 d[1]:fix(ratdenom(tmp[2])),
@@ -142,7 +142,7 @@ found in textbooks and expository works
 */
 
 nicehensel(r,p,N):=block([tmp,ee,c,d,a,aux,AA],local(c,d,a,aux,AA),
-tmp:padiccan(r,p),
+tmp:padic_canonical(r,p),
 ee:fix(log(tmp[1])/log(p)),
 c[1]:fix(ratnum(tmp[2])),
 d[1]:fix(ratdenom(tmp[2])),

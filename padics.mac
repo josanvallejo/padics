@@ -43,7 +43,7 @@ if ?fboundp (lastn) = false
 Let us first define the p-adic order of an integer
 */
 
-padicord(n,p):=block([listaf,subind,lsubind],
+padic_order_integer(n,p):=block([listaf,subind,lsubind],
 if is(equal(n,0)) then inf elseif (n>0) then
 (   
 listaf:ifactors(fix(ratnum(n))),
@@ -61,17 +61,17 @@ return(if is(equal(lsubind,0)) then 0 else second(listaf[first(subind)]))
 )$
 
 /*
-The function padicord will be used only as an auxiliary one. The actual p-adic order function,
+The function padic_order_integer will be used only as an auxiliary one. The actual p-adic order function,
 valid acting on any rational r, is this
 */
 
-padicorder(r,p):=block([numerat,denomin,pp,qq,dd],
+padic_order(r,p):=block([numerat,denomin,pp,qq,dd],
 if is(equal(r,0)) then inf else
 (
 numerat:fix(ratnum(r)),
 denomin:fix(ratdenom(r)),
-pp:padicord(numerat,p),
-qq:padicord(denomin,p),
+pp:padic_order_integer(numerat,p),
+qq:padic_order_integer(denomin,p),
 pp-qq
 )
 )$
@@ -87,8 +87,8 @@ if is(equal(r,0)) then [1,0] else
 (
 numerat:fix(ratnum(r)),
 denomin:fix(ratdenom(r)),
-pp:padicord(numerat,p),
-qq:padicord(denomin,p),
+pp:padic_order_integer(numerat,p),
+qq:padic_order_integer(denomin,p),
 dd:pp-qq,
 [p^(dd),(numerat/p^pp)/(denomin/p^qq)]
 )
@@ -103,8 +103,8 @@ if is(equal(r,0)) then 0 else
 (
 numerat:fix(ratnum(r)),
 denomin:fix(ratdenom(r)),
-pp:padicord(numerat,p),
-qq:padicord(denomin,p),
+pp:padic_order_integer(numerat,p),
+qq:padic_order_integer(denomin,p),
 p^(qq-pp)
 )
 )$

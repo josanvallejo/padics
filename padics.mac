@@ -284,7 +284,7 @@ while (is(not(equal(token,0)))) do
 tot
 )$
 
-padicdivi(l1,l2,p):=block([invd0,quot,tmp,rmd,token,par,counter],local(tmp,rmd),
+padic_dividei(l1,l2,p):=block([invd0,quot,tmp,rmd,token,par,counter],local(tmp,rmd),
 invd0:inv_mod(second(l2),p),
 quot:first(l1[1])-first(l2[1]),
 counter:1,
@@ -323,7 +323,7 @@ ss:first(sublist_indices(rest(lista),lambda([z],is(not(equal(z,0)))))),
 cons([ss+s-1],rest(lista,ss)))
 )$
 
-padicdiv(l1,l2,p):=block([lon1,lon2,lon,s1,s2,tmp],
+padic_divide(l1,l2,p):=block([lon1,lon2,lon,s1,s2,tmp],
 lon1:length(normalhensel(l2)),
 lon2:length(l2),
 if is(lon1 < lon2)
@@ -332,11 +332,11 @@ then
 lon:lon2 - lon1,
 s1:rest(l1,-lon),
 s2:normalhensel(l2),
-tmp:padicdivi(s1,s2,p),
+tmp:padic_dividei(s1,s2,p),
 cons([first(tmp[1])-lon],flatten(cons(makelist(0,k,1,lon),rest(tmp))))   
     )
 else
-padicdivi(l1,l2,p)  
+padic_dividei(l1,l2,p)  
 )$
 
 /*
@@ -467,9 +467,9 @@ The function for backsubstitution
 
 padicbacksub(M,p):=block([n:length(M),t:length(rest(flatten(M[1,1]))),x,ratprint:false],local(x),
 x:makelist(cons([0],makelist(0,k,1,t)),j,1,n),
-x[n]:padicdiv(M[n][n+1],M[n][n],p),
+x[n]:padic_divide(M[n][n+1],M[n][n],p),
 for i:n-1 thru 1 step -1 do
-    x[i]:padicdiv(padic_subtract(M[i][n+1],padicdotp(rest(list_matrix_entries(row(M,i)),-1),x,p),p),M[i][i],p),
+    x[i]:padic_divide(padic_subtract(M[i][n+1],padicdotp(rest(list_matrix_entries(row(M,i)),-1),x,p),p),M[i][i],p),
 x
 )$
 
@@ -514,7 +514,7 @@ while is((h<m) and (k<n)) do (
     if is(equal(A[r,k],cons([0],makelist(0,j,1,t)))) then k:k+1 else (
     A:rowswap(A,h,r+c),
     for i:h+1 thru m do (
-            f:padicdiv(A[i,k],A[h,k],p),
+            f:padic_divide(A[i,k],A[h,k],p),
             A[i,k]:cons([0],makelist(0,j,1,t)),
             for j:k+1 thru n do A[i,j]:padic_subtract(A[i,j],padic_multiply(f,A[h,j],p),p)
             ),
@@ -543,7 +543,7 @@ while is((h<m) and (k<n)) do (
     if is(equal(A[r,k],cons([0],makelist(0,j,1,t)))) then k:k+1 else (
     A:rowswap(A,h,r+c),
     for i:h+1 thru m do (
-            f:padicdiv(A[i,k],A[h,k],p),
+            f:padic_divide(A[i,k],A[h,k],p),
             A[i,k]:cons([0],makelist(0,j,1,t)),
             for j:k+1 thru n do A[i,j]:padic_subtract(A[i,j],padic_multiply(f,A[h,j],p),p)
             ),

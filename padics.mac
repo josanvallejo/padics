@@ -503,7 +503,7 @@ included a small heuristics to fix a maximum of t=8,
 that should suffice for simple computations
 */
 
-padicgauss(BBB,p):=block([s,t,lam:(sqrt(5)-1)/2,m:length(BBB),n:length(transpose(BBB)),B2H,A,h,k,c,tmp,r,f],local(B2H,A),
+padic_gauss(BBB,p):=block([s,t,lam:(sqrt(5)-1)/2,m:length(BBB),n:length(transpose(BBB)),B2H,A,h,k,c,tmp,r,f],local(B2H,A),
 t:digitsnumber(BBB,p),
 B2H[i,j]:=hensel(BBB[i][j],p,t),
 A:genmatrix(B2H,m,n),
@@ -533,7 +533,7 @@ For those cases, one can manually choose t with the
 alternative command padicgauss2
 */
 
-padicgauss2(BBB,p,t):=block([m:length(BBB),n:length(transpose(BBB)),B2H,A,h,k,c,tmp,r,f],local(B2H,A),
+padic_gauss2(BBB,p,t):=block([m:length(BBB),n:length(transpose(BBB)),B2H,A,h,k,c,tmp,r,f],local(B2H,A),
 B2H[i,j]:=hensel(BBB[i][j],p,t),
 A:genmatrix(B2H,m,n),
 h:1,k:1,c:0,

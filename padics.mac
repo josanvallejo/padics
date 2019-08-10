@@ -98,7 +98,7 @@ dd:pp-qq,
 Computation of the p-adic norm of a rational number
 */
 
-padicnorm(r,p):=block([numerat,denomin,pp,qq],
+padic_norm(r,p):=block([numerat,denomin,pp,qq],
 if is(equal(r,0)) then 0 else 
 (
 numerat:fix(ratnum(r)),
@@ -113,7 +113,7 @@ p^(qq-pp)
 The associated p-adic distance:
 */
 
-padicdist(x,y,p):=padicnorm(x-y,p)$
+padicdist(x,y,p):=padic_norm(x-y,p)$
 
 /*
 Construction of Hensel (pseudo)codes, which basically are
@@ -473,7 +473,7 @@ for i:n-1 thru 1 step -1 do
 x
 )$
 
-padicnormh(lista,p):=p^(-first(flatten(lista)))$
+padic_normh(lista,p):=p^(-first(flatten(lista)))$
 
 nonzeroprod(ll):=apply("*",makelist(abs(ll[k]),k,sublist_indices(ll,lambda([x],is(not(equal(x,0)))))))$
 
@@ -509,8 +509,8 @@ B2H[i,j]:=hensel(BBB[i][j],p,t),
 A:genmatrix(B2H,m,n),
 h:1,k:1,c:0,
 while is((h<m) and (k<n)) do (
-    tmp:lmax(makelist(padicnormh(A[j,k],p),j,h,m)),
-    r:first(sublist_indices(makelist(A[j,k],j,h,m),lambda([x],padicnormh(x,p)='tmp))),
+    tmp:lmax(makelist(padic_normh(A[j,k],p),j,h,m)),
+    r:first(sublist_indices(makelist(A[j,k],j,h,m),lambda([x],padic_normh(x,p)='tmp))),
     if is(equal(A[r,k],cons([0],makelist(0,j,1,t)))) then k:k+1 else (
     A:rowswap(A,h,r+c),
     for i:h+1 thru m do (
@@ -538,8 +538,8 @@ B2H[i,j]:=hensel(BBB[i][j],p,t),
 A:genmatrix(B2H,m,n),
 h:1,k:1,c:0,
 while is((h<m) and (k<n)) do (
-    tmp:lmax(makelist(padicnormh(A[j,k],p),j,h,m)),
-    r:first(sublist_indices(makelist(A[j,k],j,h,m),lambda([x],padicnormh(x,p)='tmp))),
+    tmp:lmax(makelist(padic_normh(A[j,k],p),j,h,m)),
+    r:first(sublist_indices(makelist(A[j,k],j,h,m),lambda([x],padic_normh(x,p)='tmp))),
     if is(equal(A[r,k],cons([0],makelist(0,j,1,t)))) then k:k+1 else (
     A:rowswap(A,h,r+c),
     for i:h+1 thru m do (

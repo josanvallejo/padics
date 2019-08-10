@@ -315,7 +315,7 @@ so that the first digit after the dot is not
 zero:
 */
 
-normalhensel(lista):=block([s,ss],
+normalize_hensel(lista):=block([s,ss],
 if is(equal(unique(rest(lista)),[0])) then lista
 else
 (s:first(lista[1]),
@@ -324,14 +324,14 @@ cons([ss+s-1],rest(lista,ss)))
 )$
 
 padic_divide(l1,l2,p):=block([lon1,lon2,lon,s1,s2,tmp],
-lon1:length(normalhensel(l2)),
+lon1:length(normalize_hensel(l2)),
 lon2:length(l2),
 if is(lon1 < lon2)
 then 
 (
 lon:lon2 - lon1,
 s1:rest(l1,-lon),
-s2:normalhensel(l2),
+s2:normalize_hensel(l2),
 tmp:padic_dividei(s1,s2,p),
 cons([first(tmp[1])-lon],flatten(cons(makelist(0,k,1,lon),rest(tmp))))   
     )
@@ -370,7 +370,7 @@ zerodetect(ll):=is(equal(sublist_indices(rest(ll),lambda([x],is(not(equal(x,0)))
 pdetect(ll,p):=is(equal(unique(rest(ll,2)),[p-1]))$
 
 henseltofareyaux(lista,p):=block(
-    [normli:normalhensel(lista),lnormli,ll:rest(lista),r:length(lista)-1,m,N,k,a,b,q,c,soln:0],
+    [normli:normalize_hensel(lista),lnormli,ll:rest(lista),r:length(lista)-1,m,N,k,a,b,q,c,soln:0],
     local(a,b,q,c),
 lnormli:length(normli),
 if is(equal(unique(rest(lista)),[0])) then return(0) elseif
@@ -385,7 +385,7 @@ for i:1 step 1 while is(not(equal(a[i-1],0))) do (
     q[i]:first(divide(a[i-2],a[i-1])),
     a[i]:second(divide(a[i-2],a[i-1])),
     b[i]:b[i-2]-q[i]*b[i-1],
-    c[i]:firstn(normalhensel(hensel(a[i]/b[i],p,r)),lnormli),
+    c[i]:firstn(normalize_hensel(hensel(a[i]/b[i],p,r)),lnormli),
     block(if (c[i]=normli and ((abs(a[i])>0 and abs(a[i])<=N) and (abs(b[i])>0 and abs(b[i])<=N))) then return(soln:a[i]/b[i])) 
             /*It seems that return only exits from here but not from the parent function, hence the line below*/
     ),

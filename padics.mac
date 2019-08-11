@@ -24,16 +24,26 @@ Topics covered are:
 6. p-adic systems of linear equations
 
 REMARK: Some functions in the package make use of the commands
-firstn and lastn, which require a Maxima version 5.41 or higher
+firstn and lastn, which were introduced in Maxima 5.39.
+If firstn or lastn are not detected as built-in functions,
+equivalent functions are defined here.
 */
 
 ratprint:false$
+
+if ?fboundp (firstn) = false
+  then (print ("padics: no built-in function 'firstn'; I'll define my own."),
+        firstn (l, n) := block ([m: length(l)], if n >= m then l else rest (l, n - m)));
+
+if ?fboundp (lastn) = false
+  then (print ("padics: no built-in function 'lastn'; I'll define my own."),
+        lastn (l, n) := block ([m: length(l)], if n >= m then l else rest (l, m - n)));
 
 /*
 Let us first define the p-adic order of an integer
 */
 
-padicord(n,p):=block([listaf,subind,lsubind],
+padic_order_integer(n,p):=block([listaf,subind,lsubind],
 if is(equal(n,0)) then inf elseif (n>0) then
 (   
 listaf:ifactors(fix(ratnum(n))),
@@ -51,17 +61,17 @@ return(if is(equal(lsubind,0)) then 0 else second(listaf[first(subind)]))
 )$
 
 /*
-The function padicord will be used only as an auxiliary one. The actual p-adic order function,
+The function padic_order_integer will be used only as an auxiliary one. The actual p-adic order function,
 valid acting on any rational r, is this
 */
 
-padicorder(r,p):=block([numerat,denomin,pp,qq,dd],
+padic_order(r,p):=block([numerat,denomin,pp,qq,dd],
 if is(equal(r,0)) then inf else
 (
 numerat:fix(ratnum(r)),
 denomin:fix(ratdenom(r)),
-pp:padicord(numerat,p),
-qq:padicord(denomin,p),
+pp:padic_order_integer(numerat,p),
+qq:padic_order_integer(denomin,p),
 pp-qq
 )
 )$
@@ -72,13 +82,13 @@ Reduction to the canonical form of a rational number
 The result has the form of a list [p^porder(r),a'/b']
 */
 
-padiccan(r,p):=block([numerat,denomin,pp,qq,dd],
+padic_canonical(r,p):=block([numerat,denomin,pp,qq,dd],
 if is(equal(r,0)) then [1,0] else
 (
 numerat:fix(ratnum(r)),
 denomin:fix(ratdenom(r)),
-pp:padicord(numerat,p),
-qq:padicord(denomin,p),
+pp:padic_order_integer(numerat,p),
+qq:padic_order_integer(denomin,p),
 dd:pp-qq,
 [p^(dd),(numerat/p^pp)/(denomin/p^qq)]
 )
@@ -88,13 +98,13 @@ dd:pp-qq,
 Computation of the p-adic norm of a rational number
 */
 
-padicnorm(r,p):=block([numerat,denomin,pp,qq],
+padic_norm(r,p):=block([numerat,denomin,pp,qq],
 if is(equal(r,0)) then 0 else 
 (
 numerat:fix(ratnum(r)),
 denomin:fix(ratdenom(r)),
-pp:padicord(numerat,p),
-qq:padicord(denomin,p),
+pp:padic_order_integer(numerat,p),
+qq:padic_order_integer(denomin,p),
 p^(qq-pp)
 )
 )$
@@ -103,7 +113,7 @@ p^(qq-pp)
 The associated p-adic distance:
 */
 
-padicdist(x,y,p):=padicnorm(x-y,p)$
+padic_distance(x,y,p):=padic_norm(x-y,p)$
 
 /*
 Construction of Hensel (pseudo)codes, which basically are
@@ -112,7 +122,7 @@ The output has the form [[exponent],mantissa]
 */
 
 hensel(r,p,N):=block([tmp,ee,c,d,a,aux],local(c,d,a,aux),
-tmp:padiccan(r,p),
+tmp:padic_canonical(r,p),
 ee:fix(radcan(log(tmp[1])/log(p))),
 c[1]:fix(ratnum(tmp[2])),
 d[1]:fix(ratdenom(tmp[2])),
@@ -132,7 +142,7 @@ found in textbooks and expository works
 */
 
 nicehensel(r,p,N):=block([tmp,ee,c,d,a,aux,AA],local(c,d,a,aux,AA),
-tmp:padiccan(r,p),
+tmp:padic_canonical(r,p),
 ee:fix(log(tmp[1])/log(p)),
 c[1]:fix(ratnum(tmp[2])),
 d[1]:fix(ratdenom(tmp[2])),
@@ -154,7 +164,7 @@ differences, products and divisions. Lots of
 auxiliary functions there
 */
 
-padicsum(l1,l2,p):=block([pp,gg,mm,n1,n2,rmdrs,carry,tot,token],
+padic_sum(l1,l2,p):=block([pp,gg,mm,n1,n2,rmdrs,carry,tot,token],
 pp:apply(min,append(l1[1],l2[1])),
 if (l1[1][1]>=l2[1][1]) then (gg:l1,mm:l2) else (gg:l2,mm:l1),
 if is(not(equal(gg[1][1],mm[1][1]))) then
@@ -181,13 +191,13 @@ while (is(not(equal(token,0)))) do
 cons([pp],tot)
 )$
 
-henselcomp(h,p):=block([tmp],
+hensel_complement(h,p):=block([tmp],
 tmp:(p-1)-rest(h),
 tmp[1]:tmp[1]+1,
 cons(first(h),tmp)
 )$
 
-padicsubstract(l1,l2,p):=padicsum(l1,henselcomp(l2,p),p)$
+padic_subtract(l1,l2,p):=padic_sum(l1,hensel_complement(l2,p),p)$
 
 redu(p,u,ll):=block([tmp1,tmp2,rmdr,carry,tot,token],
 	tmp1:map(lambda([z],divide(z,p)),u*ll),
@@ -208,7 +218,7 @@ redu(p,u,ll):=block([tmp1,tmp2,rmdr,carry,tot,token],
 	    tot
 )$
 
-padicsumb(l1,l2,p):=block([rmdrs,carry,tot,token],
+padic_sumb(l1,l2,p):=block([rmdrs,carry,tot,token],
 rmdrs:map(lambda([x],divide(x,p)),l1+l2),
 carry:cons(0,rest(map(first,rmdrs),-1)),
 tot:map(second,rmdrs)+carry,
@@ -224,7 +234,7 @@ tot
 )$
 
 
-padicmult(l1,l2,p):=block([l1b,l2b,pp,bigl,lon,tmp],local(tmp),
+padic_multiply(l1,l2,p):=block([l1b,l2b,pp,bigl,lon,tmp],local(tmp),
 l1b:rest(l1),
 l2b:rest(l2),
 pp:first(l1[1])+first(l2[1]),
@@ -233,19 +243,19 @@ lon:length(bigl),
 tmp[1]:bigl[1],
 for k:2 thru lon do
 (
-tmp[k]:padicsumb(tmp[k-1],bigl[k],p)
+tmp[k]:padic_sumb(tmp[k-1],bigl[k],p)
 ),
 cons([pp],tmp[lon])
 )$
 
-henselcompb(h,p):=block([tmp],
+hensel_complementb(h,p):=block([tmp],
 tmp:(p-1)-h,
 tmp[1]:tmp[1]+1,
 tmp
 )$
 
-padicsubstractb(l1,l2,p):=block([rmdrs,carry,tot,token],
-rmdrs:map(lambda([x],divide(x,p)),l1+henselcompb(l2,p)),
+padic_subtractb(l1,l2,p):=block([rmdrs,carry,tot,token],
+rmdrs:map(lambda([x],divide(x,p)),l1+hensel_complementb(l2,p)),
 carry:cons(0,rest(map(first,rmdrs),-1)),
 tot:map(second,rmdrs)+carry,
 token:apply("+",carry),
@@ -259,7 +269,7 @@ while (is(not(equal(token,0)))) do
 tot
 )$
 
-multb(u,ll,p):=block([rmdrs,carry,tot,token],
+padic_multiplyb(u,ll,p):=block([rmdrs,carry,tot,token],
 rmdrs:map(lambda([x],divide(x,p)),u*ll),
 carry:cons(0,rest(map(first,rmdrs),-1)),
 tot:map(second,rmdrs)+carry,
@@ -274,21 +284,21 @@ while (is(not(equal(token,0)))) do
 tot
 )$
 
-padicdivi(l1,l2,p):=block([invd0,quot,tmp,rmd,token,par,counter],local(tmp,rmd),
+padic_dividei(l1,l2,p):=block([invd0,quot,tmp,rmd,token,par,counter],local(tmp,rmd),
 invd0:inv_mod(second(l2),p),
 quot:first(l1[1])-first(l2[1]),
 counter:1,
 tmp:[],
 par:mod(invd0*rest(l1)[counter],p),
 tmp:endcons(par,tmp),
-rmd:padicsubstractb(rest(l1),rest(multb(par,rest(l2),p),1-counter),p),
+rmd:padic_subtractb(rest(l1),rest(padic_multiplyb(par,rest(l2),p),1-counter),p),
 token:apply("+",rmd),
 if is(equal(token,0)) then return(cons([quot],  append(tmp,makelist(0,k,1,length(l2)-2))  )) else do
 (counter:counter +1,
 while (is(not(equal(token,0)))) do
     (
     par:mod(invd0*rmd[counter],p),
-    rmd:padicsubstractb(rmd,flatten(cons(makelist(0,k,1,counter-1),rest(multb(par,rest(l2),p),1-counter))),p),
+    rmd:padic_subtractb(rmd,flatten(cons(makelist(0,k,1,counter-1),rest(padic_multiplyb(par,rest(l2),p),1-counter))),p),
     token:apply("+",rmd),
     tmp:endcons(par,tmp),
     counter:counter+1
@@ -305,7 +315,7 @@ so that the first digit after the dot is not
 zero:
 */
 
-normalhensel(lista):=block([s,ss],
+normalize_hensel(lista):=block([s,ss],
 if is(equal(unique(rest(lista)),[0])) then lista
 else
 (s:first(lista[1]),
@@ -313,20 +323,20 @@ ss:first(sublist_indices(rest(lista),lambda([z],is(not(equal(z,0)))))),
 cons([ss+s-1],rest(lista,ss)))
 )$
 
-padicdiv(l1,l2,p):=block([lon1,lon2,lon,s1,s2,tmp],
-lon1:length(normalhensel(l2)),
+padic_divide(l1,l2,p):=block([lon1,lon2,lon,s1,s2,tmp],
+lon1:length(normalize_hensel(l2)),
 lon2:length(l2),
 if is(lon1 < lon2)
 then 
 (
 lon:lon2 - lon1,
 s1:rest(l1,-lon),
-s2:normalhensel(l2),
-tmp:padicdivi(s1,s2,p),
+s2:normalize_hensel(l2),
+tmp:padic_dividei(s1,s2,p),
 cons([first(tmp[1])-lon],flatten(cons(makelist(0,k,1,lon),rest(tmp))))   
     )
 else
-padicdivi(l1,l2,p)  
+padic_dividei(l1,l2,p)  
 )$
 
 /*
@@ -355,17 +365,17 @@ Functions for converting Hensel codes to
 Farey fractions
 */
 
-zerodetect(ll):=is(equal(sublist_indices(rest(ll),lambda([x],is(not(equal(x,0))))),[1]))$
+hensel_zerodetect(ll):=is(equal(sublist_indices(rest(ll),lambda([x],is(not(equal(x,0))))),[1]))$
 
-pdetect(ll,p):=is(equal(unique(rest(ll,2)),[p-1]))$
+hensel_pdetect(ll,p):=is(equal(unique(rest(ll,2)),[p-1]))$
 
-henseltofareyaux(lista,p):=block(
-    [normli:normalhensel(lista),lnormli,ll:rest(lista),r:length(lista)-1,m,N,k,a,b,q,c,soln:0],
+hensel_to_fareyaux(lista,p):=block(
+    [normli:normalize_hensel(lista),lnormli,ll:rest(lista),r:length(lista)-1,m,N,k,a,b,q,c,soln:0],
     local(a,b,q,c),
 lnormli:length(normli),
 if is(equal(unique(rest(lista)),[0])) then return(0) elseif
-zerodetect(lista) then return(second(lista)*p^(first(first(lista)))) elseif
-pdetect(lista,p) then return(second(lista)-p) elseif
+hensel_zerodetect(lista) then return(second(lista)*p^(first(first(lista)))) elseif
+hensel_pdetect(lista,p) then return(second(lista)-p) elseif
     is(equal(unique(lastn(rest(lista),ceiling(r/2))),[0])) then return(sum(rest(lista)[k]*p^(k-1),k,1,floor(r/2))) else (
 m:p^r,
 N:ceiling(sqrt((m-1)/2)),
@@ -375,7 +385,7 @@ for i:1 step 1 while is(not(equal(a[i-1],0))) do (
     q[i]:first(divide(a[i-2],a[i-1])),
     a[i]:second(divide(a[i-2],a[i-1])),
     b[i]:b[i-2]-q[i]*b[i-1],
-    c[i]:firstn(normalhensel(hensel(a[i]/b[i],p,r)),lnormli),
+    c[i]:firstn(normalize_hensel(hensel(a[i]/b[i],p,r)),lnormli),
     block(if (c[i]=normli and ((abs(a[i])>0 and abs(a[i])<=N) and (abs(b[i])>0 and abs(b[i])<=N))) then return(soln:a[i]/b[i])) 
             /*It seems that return only exits from here but not from the parent function, hence the line below*/
     ),
@@ -395,11 +405,11 @@ miserably. We take this fact into account in the final
 version below:
 */
 
-henseltofarey(lista,p):=block([m:first(flatten(lista))],
+hensel_to_farey(lista,p):=block([m:first(flatten(lista))],
 if is(equal(m,0)) then  
-    henseltofareyaux(lista,p)
+    hensel_to_fareyaux(lista,p)
 else
-    p^m*henseltofareyaux(append([[0]],rest(lista)),p) 
+    p^m*hensel_to_fareyaux(append([[0]],rest(lista)),p) 
 )$
 
 /*
@@ -424,7 +434,7 @@ y=-x mod p. We compute the padic roots with Newton's
 method 
 */
 
-padicsqrt(n,p,[k]):=block([tmp,iter],local(iter1,iter2),
+padic_sqrt(n,p,[k]):=block([tmp,iter],local(iter1,iter2),
 tmp:sqrtmod(n,p),
 if is(stringp(tmp)) then return("There does not exist a square root")
 elseif is(equal(length(k),0)) then
@@ -446,24 +456,24 @@ by the Gauss method
 A substitute of `innerproduct' for p-adics
 */
 
-padicdotp(l1,l2,p):=block([pp],local(pp),
-pp:makelist(padicmult(l1[i],l2[i],p),i,1,length(l1)),
-xreduce(lambda([[x]],padicsum(x[1],x[2],p)),pp)
+padic_inner_product(l1,l2,p):=block([pp],local(pp),
+pp:makelist(padic_multiply(l1[i],l2[i],p),i,1,length(l1)),
+xreduce(lambda([[x]],padic_sum(x[1],x[2],p)),pp)
 )$
 
 /*
 The function for backsubstitution
 */
 
-padicbacksub(M,p):=block([n:length(M),t:length(rest(flatten(M[1,1]))),x,ratprint:false],local(x),
+padic_backsub(M,p):=block([n:length(M),t:length(rest(flatten(M[1,1]))),x,ratprint:false],local(x),
 x:makelist(cons([0],makelist(0,k,1,t)),j,1,n),
-x[n]:padicdiv(M[n][n+1],M[n][n],p),
+x[n]:padic_divide(M[n][n+1],M[n][n],p),
 for i:n-1 thru 1 step -1 do
-    x[i]:padicdiv(padicsubstract(M[i][n+1],padicdotp(rest(list_matrix_entries(row(M,i)),-1),x,p),p),M[i][i],p),
+    x[i]:padic_divide(padic_subtract(M[i][n+1],padic_inner_product(rest(list_matrix_entries(row(M,i)),-1),x,p),p),M[i][i],p),
 x
 )$
 
-padicnormh(lista,p):=p^(-first(flatten(lista)))$
+padic_normh(lista,p):=p^(-first(flatten(lista)))$
 
 nonzeroprod(ll):=apply("*",makelist(abs(ll[k]),k,sublist_indices(ll,lambda([x],is(not(equal(x,0)))))))$
 
@@ -493,20 +503,20 @@ included a small heuristics to fix a maximum of t=8,
 that should suffice for simple computations
 */
 
-padicgauss(BBB,p):=block([s,t,lam:(sqrt(5)-1)/2,m:length(BBB),n:length(transpose(BBB)),B2H,A,h,k,c,tmp,r,f],local(B2H,A),
+padic_gauss(BBB,p):=block([s,t,lam:(sqrt(5)-1)/2,m:length(BBB),n:length(transpose(BBB)),B2H,A,h,k,c,tmp,r,f],local(B2H,A),
 t:digitsnumber(BBB,p),
 B2H[i,j]:=hensel(BBB[i][j],p,t),
 A:genmatrix(B2H,m,n),
 h:1,k:1,c:0,
 while is((h<m) and (k<n)) do (
-    tmp:lmax(makelist(padicnormh(A[j,k],p),j,h,m)),
-    r:first(sublist_indices(makelist(A[j,k],j,h,m),lambda([x],padicnormh(x,p)='tmp))),
+    tmp:lmax(makelist(padic_normh(A[j,k],p),j,h,m)),
+    r:first(sublist_indices(makelist(A[j,k],j,h,m),lambda([x],padic_normh(x,p)='tmp))),
     if is(equal(A[r,k],cons([0],makelist(0,j,1,t)))) then k:k+1 else (
     A:rowswap(A,h,r+c),
     for i:h+1 thru m do (
-            f:padicdiv(A[i,k],A[h,k],p),
+            f:padic_divide(A[i,k],A[h,k],p),
             A[i,k]:cons([0],makelist(0,j,1,t)),
-            for j:k+1 thru n do A[i,j]:padicsubstract(A[i,j],padicmult(f,A[h,j],p),p)
+            for j:k+1 thru n do A[i,j]:padic_subtract(A[i,j],padic_multiply(f,A[h,j],p),p)
             ),
     h:h+1,
     k:k+1,
@@ -520,22 +530,22 @@ A
 There will be a lot of situatons where our simple
 heuristis for choosing t will lead to bad values.
 For those cases, one can manually choose t with the
-alternative command padicgauss2
+alternative command padic_gauss2
 */
 
-padicgauss2(BBB,p,t):=block([m:length(BBB),n:length(transpose(BBB)),B2H,A,h,k,c,tmp,r,f],local(B2H,A),
+padic_gauss2(BBB,p,t):=block([m:length(BBB),n:length(transpose(BBB)),B2H,A,h,k,c,tmp,r,f],local(B2H,A),
 B2H[i,j]:=hensel(BBB[i][j],p,t),
 A:genmatrix(B2H,m,n),
 h:1,k:1,c:0,
 while is((h<m) and (k<n)) do (
-    tmp:lmax(makelist(padicnormh(A[j,k],p),j,h,m)),
-    r:first(sublist_indices(makelist(A[j,k],j,h,m),lambda([x],padicnormh(x,p)='tmp))),
+    tmp:lmax(makelist(padic_normh(A[j,k],p),j,h,m)),
+    r:first(sublist_indices(makelist(A[j,k],j,h,m),lambda([x],padic_normh(x,p)='tmp))),
     if is(equal(A[r,k],cons([0],makelist(0,j,1,t)))) then k:k+1 else (
     A:rowswap(A,h,r+c),
     for i:h+1 thru m do (
-            f:padicdiv(A[i,k],A[h,k],p),
+            f:padic_divide(A[i,k],A[h,k],p),
             A[i,k]:cons([0],makelist(0,j,1,t)),
-            for j:k+1 thru n do A[i,j]:padicsubstract(A[i,j],padicmult(f,A[h,j],p),p)
+            for j:k+1 thru n do A[i,j]:padic_subtract(A[i,j],padic_multiply(f,A[h,j],p),p)
             ),
     h:h+1,
     k:k+1,

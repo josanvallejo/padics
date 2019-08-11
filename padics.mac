@@ -530,7 +530,7 @@ A
 There will be a lot of situatons where our simple
 heuristis for choosing t will lead to bad values.
 For those cases, one can manually choose t with the
-alternative command padicgauss2
+alternative command padic_gauss2
 */
 
 padic_gauss2(BBB,p,t):=block([m:length(BBB),n:length(transpose(BBB)),B2H,A,h,k,c,tmp,r,f],local(B2H,A),

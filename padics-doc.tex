@@ -92,31 +92,31 @@ the system directory (you will need root permissions for that) \texttt{/usr/shar
 
 \section{The $p-$adic norm}\label{sec2}
 
-We can compute the p-adic order of a rational number with \texttt{padicorder}.
+We can compute the p-adic order of a rational number with \texttt{padic\_order}.
 The syntax of all the commands in the package is quite intuitive; for example,
-to compute the order of a rational with respect to the prime $p$, we use \texttt{padicorder(rational,prime)}:
+to compute the order of a rational with respect to the prime $p$, we use \texttt{padic\_order(rational,prime)}:
 
 \begin{verbatim}
-(%i2)	padicorder(144,3);
+(%i2)	padic_order(144,3);
 (%o2)	2
-(%i3)	padicorder(17,3);
+(%i3)	padic_order(17,3);
 (%o3)	0
 \end{verbatim}
 
 We follow the convention that the order of $0$ is always (real) infinity:
 
 \begin{verbatim}
-(%i4)	makelist(padicorder(0,i),i,[2,3,5,7,11,13]);
+(%i4)	makelist(padic_order(0,i),i,[2,3,5,7,11,13]);
 (%o4)	[inf,inf,inf,inf,inf,inf]
-(%i5)	padicorder(3/10,5);
+(%i5)	padic_order(3/10,5);
 (%o5)	-1
-(%i6)	padicorder(36015/88,7);
+(%i6)	padic_order(36015/88,7);
 (%o6)	4
 \end{verbatim}
 
 Notice that the $p-$adic order is an even function:
 \begin{verbatim}
-(%i7)	padicorder(-3/10,5);
+(%i7)	padic_order(-3/10,5);
 (%o7)	-1
 \end{verbatim}
 
@@ -124,82 +124,82 @@ The reduction to the canonical form of a rational number
 $$
 r=\frac{a}{b}=p^{\mathrm{porder}(r)} \frac{a'}{b'}
 $$
-can be achieved with \texttt{padiccan}. The result has the form of a list 
+can be achieved with \texttt{padic\_canonical}. The result has the form of a list 
 \texttt{[p\^{}porder(r),a'/b']}:
 \begin{verbatim}
-(%i8)	padiccan(0.234,2);
+(%i8)	padic_canonical(0.234,2);
 (%o8)	[1/4,117/125]
-(%i9)	padiccan(0,3);
+(%i9)	padic_canonical(0,3);
 (%o9)	[1,0]
 \end{verbatim}
 
-The $p-$adic norm of a rational number is computed by \texttt{padicnorm}:
+The $p-$adic norm of a rational number is computed by \texttt{padic\_norm}:
 \begin{verbatim}
-(%i10)	makelist(padicnorm(0,j),j,[2,3,5,7,11,13,17]);
+(%i10)	makelist(padic_norm(0,j),j,[2,3,5,7,11,13,17]);
 (%o10)	[0,0,0,0,0,0,0]
-(%i11)	padicnorm(17,17);
+(%i11)	padic_norm(17,17);
 (%o11)	1/17
-(%i12)	padicnorm(144,3);
+(%i12)	padic_norm(144,3);
 (%o12)	1/9
-(%i13)	padicnorm(12,5);
+(%i13)	padic_norm(12,5);
 (%o13)	1
-(%i14)	makelist(padicnorm(162/13,k),k,[3,13]);
+(%i14)	makelist(padic_norm(162/13,k),k,[3,13]);
 (%o14)	[1/81,13]
 \end{verbatim}
 
 The next example comes from \url{http://mathworld.wolfram.com/p-adicNorm.html}:
 \begin{verbatim}
-(%i15)	makelist(padicnorm(140/297,k),k,[2,3,5,7,11]);
+(%i15)	makelist(padic_norm(140/297,k),k,[2,3,5,7,11]);
 (%o15)	[1/4,27,1/5,1/7,11]
 \end{verbatim}
 
 Another example, this one from \url{www.asiapacific-mathnews.com/03/0304/0001_0006.pdf}:
 \begin{verbatim}
-(%i16)	makelist(padicnorm(63/550,k),k,[2,3,5,7,11,13]);
+(%i16)	makelist(padic_norm(63/550,k),k,[2,3,5,7,11,13]);
 (%o16)	[2,1/9,25,1/7,11,1]
-(%i17)	padicnorm(0.234,2);
+(%i17)	padic_norm(0.234,2);
 (%o17)	4
 \end{verbatim}
 
 Let us check the triangle \emph{equality}:
 \begin{verbatim}
-(%i18)	padicnorm(3/10,5);
+(%i18)	padic_norm(3/10,5);
 (%o18)	5
-(%i19)	padicnorm(40,5);
+(%i19)	padic_norm(40,5);
 (%o19)	1/5
-(%i20)	padicnorm(3/10-40,5);
+(%i20)	padic_norm(3/10-40,5);
 (%o20)	5
 \end{verbatim}
 
 The next examples come from \url{https://www.sangakoo.com/en/unit/p-adic-distance}:
 \begin{verbatim}
-(%i21)	padicnorm(10/12,2);
+(%i21)	padic_norm(10/12,2);
 (%o21)	2
-(%i22)	padicnorm(10/12,5);
+(%i22)	padic_norm(10/12,5);
 (%o22)	1/5
-(%i23)	padicnorm(10/12,7);
+(%i23)	padic_norm(10/12,7);
 (%o23)	1
 \end{verbatim}
 
 Of course, once we have a norm available, we can define the
-associated $p-$adic distance, here denoted \texttt{padicdist}.
+associated $p-$adic distance, here denoted \texttt{padic\_distance}.
 The first example computes the distance between $2$ and $28814$ in
 $\mathbb{Q}_7$ (so you can easily guess the syntax):
 	
 \begin{verbatim}
-(%i24)	padicdist(2,28814,7);
+(%i24)	padic_distance(2,28814,7);
 (%o24)	1/2401
-(%i25)	padicdist(2,3,7);
+(%i25)	padic_distance(2,3,7);
 (%o25)	1
-(%i26)	padicdist(2166^2,2,7);
+(%i26)	padic_distance(2166^2,2,7);
 (%o26)	1/2401
-(%i27)	padicdist(3,3+29^4,29);
+(%i27)	padic_distance(3,3+29^4,29);
 (%o27)	1/707281
 \end{verbatim}
 The next example comes from \url{https://www.sangakoo.com/en/unit/p-adic-distance}:
 
 \begin{verbatim}
-(%i28)	padicdist(82,1,3);
+(%i28)	padic_distance(82,1,3);
 (%o28)	1/81
 \end{verbatim}
 
@@ -314,9 +314,9 @@ Let us compare this with the table presented in \cite{2}:
 
 \noindent The basic arithmetic functions are implemented as:
 \begin{itemize}
-	\item  \texttt{padicsum} (for sum, addition)
-	\item  \texttt{padicsubstract} (for difference, substraction)
-	\item  \texttt{padicmult} (for product, multiplication)
+	\item  \texttt{padic\_sum} (for sum, addition)
+	\item  \texttt{padic\_subtract} (for difference, substraction)
+	\item  \texttt{padic\_multiply} (for product, multiplication)
 	\item  \texttt{padivdiv} (for division, quotient)
 \end{itemize}
 
@@ -328,7 +328,7 @@ Some test numbers:
 (l1)	[[-1],4,2,2,2]
 (%i56)	l2:hensel(1/2,5,4);
 (l2)	[[0],3,2,2,2]
-(%i57)	padicsum(l1,l2,5);
+(%i57)	padic_sum(l1,l2,5);
 (%o57)	[[-1],4,0,0,0]
 \end{verbatim}
 
@@ -341,7 +341,7 @@ Notice that the Hensel code for the sum $3/10+1/2$ corresponds to $4/5$:
 Also, notice that a consequence of using a finite segment representation is that
 adding up a really small number with a really big one just gives the bigger:
 \begin{verbatim}
-(%i59)	padicsum([[2],2,5,1,5],[[-3],3,3,3,2],7);
+(%i59)	padic_sum([[2],2,5,1,5],[[-3],3,3,3,2],7);
 (%o59)	[[-3],3,3,3,2]
 \end{verbatim}
 
@@ -351,19 +351,19 @@ Another test (this is an example in \cite{2}) with $p=5$ and $r=9$
 (h1)	[[0],4,1,3,1,3,1,3,1,3]
 (%i61)	h2:hensel(5/6,5,9);
 (h2)	[[1],1,4,0,4,0,4,0,4,0]
-(%i62)	padicsum(h1,h2,5);
+(%i62)	padic_sum(h1,h2,5);
 (%o62)	[[0],4,2,2,2,2,2,2,2,2]
 \end{verbatim}
 
 Let us check the following example in \cite{2}:
 \begin{verbatim}
-(%i63)	padicsubstract(h1,h2,5);
+(%i63)	padic_subtract(h1,h2,5);
 (%o63)	[[0],4,0,4,0,4,0,4,0,4]
 \end{verbatim}
 
 And those of \cite{3}:
 \begin{verbatim}
-(%i64)	padicsubstract(hensel(3/4,5,4),hensel(3/2,5,4),5);
+(%i64)	padic_subtract(hensel(3/4,5,4),hensel(3/2,5,4),5);
 (%o64)	[[0],3,3,3,3]
 \end{verbatim}
 
@@ -373,13 +373,13 @@ An example on multiplication, also from \cite{3}:
 (t1)	[[-1],3,3,1,3]
 (%i66)	t2:hensel(5/2,5,4);
 (t2)	[[1],3,2,2,2]
-(%i67)	padicmult(t1,t2,5);
+(%i67)	padic_multiply(t1,t2,5);
 (%o67)	[[0],4,1,3,1]
 \end{verbatim}
 
 Another example from \cite{2}:
 \begin{verbatim}
-(%i68)	padicmult(h1,h2,5);
+(%i68)	padic_multiply(h1,h2,5);
 (%o68)	[[1],4,2,0,1,2,4,3,2,0]
 \end{verbatim}
 
@@ -389,20 +389,20 @@ An example from \cite{4}:
 (al)	[[0],4,3,3,3]
 (%i70)	be:hensel(1/3,5,4);
 (be)	[[0],2,3,1,3]
-(%i71)	padicmult(al,be,5);
+(%i71)	padic_multiply(al,be,5);
 (%o71)	[[0],3,4,2,4]
 \end{verbatim}
 
-The function normalhensel normalizes the Hensel code so that the
+The function \texttt{normalize\_hensel} normalizes the Hensel code so that the
 first digit after the dot is not zero:
 \begin{verbatim}
-(%i72)	normalhensel([[-1],0,0,1,2,3]);
+(%i72)	normalize_hensel([[-1],0,0,1,2,3]);
 (%o72)	[[1],1,2,3]
 \end{verbatim}
 It is internally used by the function for computing divisions. Our first
 example is a trivial one:
 \begin{verbatim}
-(%i73)	padicdiv([[0],4,0,0,0,0,0,0],[[0],2,0,0,0,0,0,0],7);
+(%i73)	padic_divide([[0],4,0,0,0,0,0,0],[[0],2,0,0,0,0,0,0],7);
 (%o73)	[[0],2,0,0,0,0,0,0]
 \end{verbatim}
 
@@ -412,22 +412,22 @@ The next example is from \cite{2}:
 (dividend)	[[0],4,1,3,1,3,1,3]
 (%i75)	divisor:[[0],3,4,2,4,2,4,2];
 (divisor)	[[0],3,4,2,4,2,4,2]
-(%i76)	padicdivi(dividend,divisor,5);
+(%i76)	padic_dividei(dividend,divisor,5);
 (%o76)	[[0],3,1,0,0,0,0,0]
 (%i77)	d1:[[0],2,1,1,1];
 (d1)	[[0],2,1,1,1]
 (%i78)	d2:[[-1],1,1,0,0];
 (d2)	[[-1],1,1,0,0]
-(%i79)	padicdiv(d1,d2,5);
+(%i79)	padic_divide(d1,d2,5);
 (%o79)	[[1],2,4,1,4]
-(%i80)	padicdiv([[0],4,3,3,3],[[0],0,1,4,0],5);
+(%i80)	padic_divide([[0],4,3,3,3],[[0],0,1,4,0],5);
 (%o80)	[[-2],0,4,2,2]
 \end{verbatim}
 
 This is the example presented in \cite{3}: $1/4/(1/2+1/3)+1/25$
 \begin{verbatim}
-(%i81)	padicsum(padicdiv([[0],4,3,3,3],
-                          padicsum([[0],3,2,2,2],[[0],2,3,1,3],5)
+(%i81)	padic_sum(padic_divide([[0],4,3,3,3],
+                          padic_sum([[0],3,2,2,2],[[0],2,3,1,3],5)
                           ,5),
                  [[-2],1,0,0,0],
                  5);
@@ -448,7 +448,7 @@ Another example, from \cite{4}:
 (alf)	[[0],2,2,4,3]
 (%i85)	bet:hensel(1/2,5,4);
 (bet)	[[0],3,2,2,2]
-(%i86)	padicdiv(alf,bet,5);
+(%i86)	padic_divide(alf,bet,5);
 (%o86)	[[0],4,4,3,2]
 \end{verbatim}
 
@@ -490,39 +490,39 @@ For instance, cases such as
 \texttt{[[m],a0,a1,...,ak,0,0,...,0s]}
 with $s>k$.
 
-The syntax is \texttt{henseltofarey(list,p)}, where \texttt{list} is
+The syntax is \texttt{hensel\_to\_farey(list,p)}, where \texttt{list} is
 a Hensel code, and $p$ is the prime we are considering.
 Some trivial examples:
 \begin{verbatim}
-(%i91)	henseltofarey([[2],3,0,0,0,0,0,0,0],7);
+(%i91)	hensel_to_farey([[2],3,0,0,0,0,0,0,0],7);
 (%o91)	147
-(%i92)	henseltofarey([[0],4,4,4,4,4,4,4],5);
+(%i92)	hensel_to_farey([[0],4,4,4,4,4,4,4],5);
 (%o92)	-1
-(%i93)	henseltofarey([[0],3,3,3,3,3,3,3],5);
+(%i93)	hensel_to_farey([[0],3,3,3,3,3,3,3],5);
 (%o93)	-3/4
-(%i94)	henseltofarey([[0],0,0,0,0,0,0],5);
+(%i94)	hensel_to_farey([[0],0,0,0,0,0,0],5);
 (%o94)	0
 \end{verbatim}
 
 From \cite{6} (pg 12):
 \begin{verbatim}
-(%i95)	henseltofarey([[0],2,3,1,5],7);
+(%i95)	hensel_to_farey([[0],2,3,1,5],7);
 (%o95)	9/43
 \end{verbatim}
 
 From \cite{7} (pp. 100 and ff):
 \begin{verbatim}
-(%i96)	henseltofarey([[0],0,2,4,1],5);
+(%i96)	hensel_to_farey([[0],0,2,4,1],5);
 (%o96)	5/8
-(%i97)	henseltofarey([[1],2,4,1,4],5);
+(%i97)	hensel_to_farey([[1],2,4,1,4],5);
 (%o97)	5/8
-(%i98)	henseltofarey([[-1],3,2,2,2],5);
+(%i98)	hensel_to_farey([[-1],3,2,2,2],5);
 (%o98)	1/10
-(%i99)	henseltofarey([[0],3,2,2,2],5);
+(%i99)	hensel_to_farey([[0],3,2,2,2],5);
 (%o99)	1/2
-(%i100)	henseltofarey([[0],2,3,1,3],5);
+(%i100)	hensel_to_farey([[0],2,3,1,3],5);
 (%o100)	1/3
-(%i101)	henseltofarey([[0],0,6,0,6],7);
+(%i101)	hensel_to_farey([[0],0,6,0,6],7);
 (%o101)	-7/8
 \end{verbatim}
 
@@ -536,25 +536,25 @@ A quick check:
 
 Example from \cite{11}:
 \begin{verbatim}
-(%i104)	henseltofarey([[0],2,2,1,0],5);
+(%i104)	hensel_to_farey([[0],2,2,1,0],5);
 (%o104)	4/17
-(%i105)	henseltofarey([[0],1,2,1,4],5);
+(%i105)	hensel_to_farey([[0],1,2,1,4],5);
 (%o105)	2/7
 \end{verbatim}
 
 Examples from the paper \cite{8}:
 \begin{verbatim}
-(%i106)	henseltofarey([[0],2,2,1,0],5);
+(%i106)	hensel_to_farey([[0],2,2,1,0],5);
 (%o106)	4/17
-(%i107)	henseltofarey([[0],2,2,3,4],5);
+(%i107)	hensel_to_farey([[0],2,2,3,4],5);
 (%o107)	17/16
-(%i108)	henseltofarey([[0],4,2,3,4],5);
+(%i108)	hensel_to_farey([[0],4,2,3,4],5);
 (%o108)	13/17
-(%i109)	henseltofarey([[0],1,1,0,0,1,0],3);
+(%i109)	hensel_to_farey([[0],1,1,0,0,1,0],3);
 (%o109)	-13/17
-(%i110)	henseltofarey([[0],1,2,1,4],5);
+(%i110)	hensel_to_farey([[0],1,2,1,4],5);
 (%o110)	2/7
-(%i111)	henseltofarey([[0],3,4,2,3],5);
+(%i111)	hensel_to_farey([[0],3,4,2,3],5);
 (%o111)	11/7
 \end{verbatim}
 
@@ -597,11 +597,11 @@ But it is modulo $p=7$:
 
 If $a$ is a quadratic residue modulo $p$ with root $x$, then another root is
 given by the $y$ such that $y=-x \mod p$. We compute the $p-$adic roots numerically,
-with the aid of Newton's method, using the command \texttt{padicsqrt}, whose syntax is
-\texttt{padicsqrt(number,p)}. The command admits an optional argument fixing the number
-of iterations to be done, as in \texttt{padicsqrt(number,p,iterations)}.
+with the aid of Newton's method, using the command \texttt{padic\_sqrt}, whose syntax is
+\texttt{padic\_sqrt(number,p)}. The command admits an optional argument fixing the number
+of iterations to be done, as in \texttt{padic\_sqrt(number,p,iterations)}.
 \begin{verbatim}
-(%i114)	padicsqrt(2,7);
+(%i114)	padic_sqrt(2,7);
 (%o114)	[215912063945802350977/152672884556058511392,
          2267891697076964737/1603641597827614272]
 \end{verbatim}
@@ -614,7 +614,7 @@ We can get the corresponding Hensel of the roots codes through
 
 Another example: the square root of $7$ in $\mathbb{Q}_3$ (from \cite{9}):
 \begin{verbatim}
-(%i116)	padicsqrt(7,3,3);
+(%i116)	padic_sqrt(7,3,3);
 (%o116)	[977/368,108497/41008]
 \end{verbatim}
 
@@ -625,20 +625,20 @@ make sense to take more than $6$ digits. Hence we do the following:
 \begin{verbatim}
 (%i117)	map(lambda([u],hensel(u,3,6)),%);
 (%o117)	[[[0],1,1,1,0,2,0],[[0],2,1,1,2,0,2]]
-(%i118)	henseltofarey(%[1],3);
+(%i118)	hensel_to_farey(%[1],3);
 (%o118)	1/25
 \end{verbatim}
 
 The result is not exactly the rational we started with, but it is very close
 in $\mathbb{Q}_3$:
 \begin{verbatim}
-(%i119)	padicdist(977/368,1/25,3);
+(%i119)	padic_distance(977/368,1/25,3);
 (%o119)	1/2187
 \end{verbatim}
 
 More examples:
 \begin{verbatim}
-(%i120)	padicsqrt(6,5)[1];
+(%i120)	padic_sqrt(6,5)[1];
 (%o120)	80746825394092993/32964753427463648
 (%i121)	hensel(%,5,4);
 (%o121)	[[0],1,3,0,4]
@@ -647,7 +647,7 @@ More examples:
 The results can be compared against those given in
 the on-line calculator \url{http://www.numbertheory.org/php/p-adic.html}:
 \begin{verbatim}
-(%i122)	padicsqrt(25,7);
+(%i122)	padic_sqrt(25,7);
 (%o122)	[552213837122886833247075521/110442767424206762611644736,5]
 (%i123)	map(lambda([u],hensel(u,7,8)),%);
 (%o123)	[[[0],2,6,6,6,6,6,6,6],[[0],5,0,0,0,0,0,0,0]]
@@ -655,7 +655,7 @@ the on-line calculator \url{http://www.numbertheory.org/php/p-adic.html}:
 
 Example from \cite{10}:
 \begin{verbatim}
-(%i124)	padicsqrt(-2,3);
+(%i124)	padic_sqrt(-2,3);
 (%o124)	[-28545857/22783264,28545857/22783264]
 (%i125)	hensel(%[1],3,8);
 (%o125)	[[0],1,1,2,0,0,2,0,1]
@@ -664,11 +664,11 @@ Example from \cite{10}:
 Again an example from \cite{9}, to see the influence of the choice of initial condition
 in Newton's iteration (notice how we fix the number of iterations as $3$ here):
 \begin{verbatim}
-(%i126)	padicsqrt(1,3,3);
+(%i126)	padic_sqrt(1,3,3);
 (%o126)	[1,3281/3280]
 (%i127)	map(lambda([u],hensel(u,3,8)),%);
 (%o127)	[[[0],1,0,0,0,0,0,0,0],[[0],2,2,2,2,2,2,2,2]]
-(%i128)	map(lambda([u],henseltofarey(u,3)),%);
+(%i128)	map(lambda([u],hensel_to_farey(u,3)),%);
 (%o128)	[1,-1]
 \end{verbatim}
 
@@ -676,30 +676,30 @@ in Newton's iteration (notice how we fix the number of iterations as $3$ here):
 
 \noindent This is a topic of fundamental importance in applications. The algorithm
 	implemented here is Gaussian reduction, and in order to solve the problem $Ax=b$
-	we have the commands \texttt{padicgauss} and
-	\texttt{padicbacksub}. The first one triangularizes the system, and its syntax
-	is \texttt{padicgauss(B,p)}, where $B=A|b$ is the augmented matrix of the system
+	we have the commands \texttt{padic\_gauss} and
+	\texttt{padic\_backsub}. The first one triangularizes the system, and its syntax
+	is \texttt{padic\_gauss(B,p)}, where $B=A|b$ is the augmented matrix of the system
 	(that is, the coefficient matrix $A$ augmented with the column $b$ of non
 	homogeneous terms). The resulting triangular matrix is processed
-	by \texttt{padicbacksub} to obtain the Hensel codes of the solution.
+	by \texttt{padic\_backsub} to obtain the Hensel codes of the solution.
 
 The following examples are from \cite{4}:
 \begin{verbatim}
 (%i129)	D:matrix([3,1,3,16],[1,3,1,8],[1,1,3,12])$
-(%i130)	padicgauss(D,11);
+(%i130)	padic_gauss(D,11);
 (%o130)	matrix(
 		[[[0],3,0,0,0],	[[0],1,0,0,0],	[[0],3,0,0,0],	[[0],5,1,0,0]],
 		[[[0],0,0,0,0],	[[0],10,3,7,3],	[[0],0,0,0,0],	[[0],10,3,7,3]],
 		[[[0],0,0,0,0],	[[0],0,0,0,0],	[[0],2,0,0,0],	[[0],6,0,0,0]]
 	)
-(%i131)	padicbacksub(%,11);
+(%i131)	padic_backsub(%,11);
 (%o131)	[[[0],2,0,0,0],[[0],1,0,0,0],[[0],3,0,0,0]]
 \end{verbatim}
 
 By converting to Farey fractions, we get the rational form of the solutions:
 
 \begin{verbatim}
-(%i132)	map(lambda([x],henseltofarey(x,11)),%);
+(%i132)	map(lambda([x],hensel_to_farey(x,11)),%);
 (%o132)	[2,1,3]
 \end{verbatim}
 
@@ -711,19 +711,19 @@ Another example:
 		[-3,	0,	2,	-5],
 		[4,	-5,	-1,	0]
 	)
-(%i134)	padicgauss(C,5);
+(%i134)	padic_gauss(C,5);
 (%o134)	matrix(
 		[[[0],2,0,0,0,0,0],	[[0],2,0,0,0,0,0],	[[0],4,4,4,4,4,4],	[[1],1,0,0,0,0,0]],
 		[[[0],0,0,0,0,0,0],	[[0],3,0,0,0,0,0],	[[0],3,2,2,2,2,2],	[[1],3,2,2,2,2,2]],
 		[[[0],0,0,0,0,0,0],	[[0],0,0,0,0,0,0],	[[0],0,3,2,2,2,2],	[[0],0,2,2,2,2,2]]
 	)
-(%i135)	padicbacksub(%,5);
+(%i135)	padic_backsub(%,5);
 (%o135)	[[[-2],0,0,1,0,0,0],[[-2],0,0,1,0,0,0],[[-2],0,0,4,4,4,4]]
 \end{verbatim}
 
 We convert the solution to rational (Farey) expressions:
 \begin{verbatim}
-(%i136)	map(lambda([x],henseltofarey(x,5)),%);
+(%i136)	map(lambda([x],hensel_to_farey(x,5)),%);
 (%o136)	[1,1,-1]
 \end{verbatim}
 
@@ -746,11 +746,11 @@ The examples above were trivial, the only intention was to show
 	[2,2,2,2,2,2,2,2,2,1,3],
 	[1,1,1,1,1,1,1,1,1,1,1]
 	)$
-(%i138)	padicgauss(E,8209)$
+(%i138)	padic_gauss(E,8209)$
 (%i139)	time(%);
 (%o139)	[1.038]
-(%i140)	padicbacksub(%th(2),8209)$
-(%i141)	map(lambda([x],henseltofarey(x,8209)),%);
+(%i140)	padic_backsub(%th(2),8209)$
+(%i141)	map(lambda([x],hensel_to_farey(x,8209)),%);
 (%o141)	[-1,8,-21,8,20,-19,-3,19,-9,-1]
 \end{verbatim}
 
@@ -779,29 +779,29 @@ For example:
 		[1/4,	1/5,	1/6,	1/7,	1/8,	743/840],
 		[1/5,	1/6,	1/7,	1/8,	1/9,	125/168]
 	)
-(%i143)	padicgauss(F,8209)$
+(%i143)	padic_gauss(F,8209)$
 (%i144)	time(%);
 (%o144)	[0.161]
-(%i145)	padicbacksub(%th(2),8209);
+(%i145)	padic_backsub(%th(2),8209);
 (%o145)	[[[0],0,0,0,0,0,0,0,0],[[0],21,0,0,0,0,0,0,0],
          [[0],8120,8208,8208,8208,8208,8208,8208,8208],
          [[0],141,0,0,0,0,0,0,0],[[0],8140,8208,8208,8208,8208,8208,8208,8208]]
-(%i146)	map(lambda([x],henseltofarey(x,8209)),%);
+(%i146)	map(lambda([x],hensel_to_farey(x,8209)),%);
 (%o146)	[0,21,-89,141,-69]
 \end{verbatim}
 
-Observe that \texttt{padicgauss} automatically chooses the number $t$ of
+Observe that \texttt{padic\_gauss} automatically chooses the number $t$ of
 digits in the Hensel codes of the solution. There will be a lot of situatons
 where our simple heuristics for choosing $t$ will lead to bad values. 
 For those cases, one can manually choose $t$ as another argument,
-using the alternative function \texttt{padicgauss2}. 
+using the alternative function \texttt{padic\_gauss2}. 
 Below we choose $8$ digits to solve the system defined by the matrix $E$
 defined above, getting the same result as before:
 
 \begin{verbatim}
-(%i147)	padicgauss2(E,8209,8)$
-(%i148)	padicbacksub(%,8209)$
-(%i149)	map(lambda([x],henseltofarey(x,8209)),%);
+(%i147)	padic_gauss2(E,8209,8)$
+(%i148)	padic_backsub(%,8209)$
+(%i149)	map(lambda([x],hensel_to_farey(x,8209)),%);
 (%o149)	[-1,8,-21,8,20,-19,-3,19,-9,-1]
 \end{verbatim}
 
@@ -828,13 +828,13 @@ Let us see how p-adic arithmetics deal with the high condition number of
 Notice that the non-homogeneous coefficients in $M_2$ are really close to the initial ones in 
 $M_1$:
 \begin{verbatim}
-(%i152)	makelist(padicdist(M1[j][6],M2[j][6],29),j,1,length(M1));
+(%i152)	makelist(padic_distance(M1[j][6],M2[j][6],29),j,1,length(M1));
 (%o152)	[1/20511149,1/24389,1/20511149,1/500246412961,1/17249876309]
 \end{verbatim}
 
 In this case, the output has a size small enough to be displayed:
 \begin{verbatim}
-(%i153)	padicgauss2(M1,29,6);
+(%i153)	padic_gauss2(M1,29,6);
 \end{verbatim}
 \begin{sideways}
 \begin{minipage}{\textheight}
@@ -852,18 +852,18 @@ In this case, the output has a size small enough to be displayed:
 \end{sideways}
 
 \begin{verbatim}
-(%i157)	padicbacksub(%,29);
+(%i157)	padic_backsub(%,29);
 (%o157)	[[[0],9,4,0,19,18,1],[[0],20,16,25,14,20,3],
          [[0],19,6,17,8,15,19],[[0],10,20,28,24,27,18],
          [[0],6,21,15,15,0,11]]
-(%i158)	map(lambda([x],henseltofarey(x,29)),%);
+(%i158)	map(lambda([x],hensel_to_farey(x,29)),%);
 (%o158)	[1/73774969,2/122364169,-4725/9013,1/83362185,2/80199829]
 \end{verbatim}
 
 The solutions of the original system and the perturbed one, are quite close
 (in the $p-$adic distance, of course):
 \begin{verbatim}
-(%i159)	makelist(padicdist(%[j],%th(4)[j],29),j,1,length(%));
+(%i159)	makelist(padic_distance(%[j],%th(4)[j],29),j,1,length(%));
 (%o159)	[1/24389,1/24389,1/24389,1/24389,1/24389]
 \end{verbatim}
 

@@ -6,85 +6,85 @@
 (load("padics.mac"), 0);
 0$
 
-padicorder(144,3);
+padic_order(144,3);
 2$
 
-padicorder(17,3);
+padic_order(17,3);
 0$
 
-makelist(padicorder(0,i),i,[2,3,5,7,11,13]);
+makelist(padic_order(0,i),i,[2,3,5,7,11,13]);
 [inf,inf,inf,inf,inf,inf]$
 
-padicorder(3/10,5);
+padic_order(3/10,5);
 -1$
 
-padicorder(36015/88,7);
+padic_order(36015/88,7);
 4$
 
-padicorder(-3/10,5);
+padic_order(-3/10,5);
 -1$
 
-padiccan(0.234,2);
+padic_canonical(0.234,2);
 [1/4,117/125]$
 
-padiccan(0,3);
+padic_canonical(0,3);
 [1,0]$
 
-makelist(padicnorm(0,j),j,[2,3,5,7,11,13,17]);
+makelist(padic_norm(0,j),j,[2,3,5,7,11,13,17]);
 [0,0,0,0,0,0,0]$
 
-padicnorm(17,17);
+padic_norm(17,17);
 1/17$
 
-padicnorm(144,3);
+padic_norm(144,3);
 1/9$
 
-padicnorm(12,5);
+padic_norm(12,5);
 1$
 
-makelist(padicnorm(162/13,k),k,[3,13]);
+makelist(padic_norm(162/13,k),k,[3,13]);
 [1/81,13]$
 
-makelist(padicnorm(140/297,k),k,[2,3,5,7,11]);
+makelist(padic_norm(140/297,k),k,[2,3,5,7,11]);
 [1/4,27,1/5,1/7,11]$
 
-makelist(padicnorm(63/550,k),k,[2,3,5,7,11,13]);
+makelist(padic_norm(63/550,k),k,[2,3,5,7,11,13]);
 [2,1/9,25,1/7,11,1]$
 
-padicnorm(0.234,2);
+padic_norm(0.234,2);
 4$
 
-padicnorm(3/10,5);
+padic_norm(3/10,5);
 5$
 
-padicnorm(40,5);
+padic_norm(40,5);
 1/5$
 
-padicnorm(3/10-40,5);
+padic_norm(3/10-40,5);
 5$
 
-padicnorm(10/12,2);
+padic_norm(10/12,2);
 2$
 
-padicnorm(10/12,5);
+padic_norm(10/12,5);
 1/5$
 
-padicnorm(10/12,7);
+padic_norm(10/12,7);
 1$
 
-padicdist(2,28814,7);
+padic_distance(2,28814,7);
 1/2401$
 
-padicdist(2,3,7);
+padic_distance(2,3,7);
 1$
 
-padicdist(2166^2,2,7);
+padic_distance(2166^2,2,7);
 1/2401$
 
-padicdist(3,3+29^4,29);
+padic_distance(3,3+29^4,29);
 1/707281$
 
-padicdist(82,1,3);
+padic_distance(82,1,3);
 1/81$
 
 /* p-adic expansions (Hensel codes) */
@@ -175,10 +175,10 @@ l1:hensel(3/10,5,4);
 l2:hensel(1/2,5,4);
 [[0],3,2,2,2]$
 
-padicsum(l1,l2,5);
+padic_sum(l1,l2,5);
 [[-1],4,0,0,0]$
 
-padicsum([[2],2,5,1,5],[[-3],3,3,3,2],7);
+padic_sum([[2],2,5,1,5],[[-3],3,3,3,2],7);
 [[-3],3,3,3,2]$
 
 h1:hensel(2/3,5,9);
@@ -187,13 +187,13 @@ h1:hensel(2/3,5,9);
 h2:hensel(5/6,5,9);
 [[1],1,4,0,4,0,4,0,4,0]$
 
-padicsum(h1,h2,5);
+padic_sum(h1,h2,5);
 [[0],4,2,2,2,2,2,2,2,2]$
 
-padicsubstract(h1,h2,5);
+padic_subtract(h1,h2,5);
 [[0],4,0,4,0,4,0,4,0,4]$
 
-padicsubstract(hensel(3/4,5,4),hensel(3/2,5,4),5);
+padic_subtract(hensel(3/4,5,4),hensel(3/2,5,4),5);
 [[0],3,3,3,3]$
 
 t1:hensel(4/15,5,4);
@@ -202,10 +202,10 @@ t1:hensel(4/15,5,4);
 t2:hensel(5/2,5,4);
 [[1],3,2,2,2]$
 
-padicmult(t1,t2,5);
+padic_multiply(t1,t2,5);
 [[0],4,1,3,1]$
 
-padicmult(h1,h2,5);
+padic_multiply(h1,h2,5);
 [[1],4,2,0,1,2,4,3,2,0]$
 
 al:hensel(1/4,5,4);
@@ -214,13 +214,13 @@ al:hensel(1/4,5,4);
 be:hensel(1/3,5,4);
 [[0],2,3,1,3]$
 
-padicmult(al,be,5);
+padic_multiply(al,be,5);
 [[0],3,4,2,4]$
 
-normalhensel([[-1],0,0,1,2,3]);
+normalize_hensel([[-1],0,0,1,2,3]);
 [[1],1,2,3]$
 
-padicdiv([[0],4,0,0,0,0,0,0],[[0],2,0,0,0,0,0,0],7);
+padic_divide([[0],4,0,0,0,0,0,0],[[0],2,0,0,0,0,0,0],7);
 [[0],2,0,0,0,0,0,0]$
 
 dividend:[[0],4,1,3,1,3,1,3];
@@ -229,7 +229,7 @@ dividend:[[0],4,1,3,1,3,1,3];
 divisor:[[0],3,4,2,4,2,4,2];
 [[0],3,4,2,4,2,4,2]$
 
-padicdivi(dividend,divisor,5);
+padic_dividei(dividend,divisor,5);
 [[0],3,1,0,0,0,0,0]$
 
 d1:[[0],2,1,1,1];
@@ -238,13 +238,13 @@ d1:[[0],2,1,1,1];
 d2:[[-1],1,1,0,0];
 [[-1],1,1,0,0]$
 
-padicdiv(d1,d2,5);
+padic_divide(d1,d2,5);
 [[1],2,4,1,4]$
 
-padicdiv([[0],4,3,3,3],[[0],0,1,4,0],5);
+padic_divide([[0],4,3,3,3],[[0],0,1,4,0],5);
 [[-2],0,4,2,2]$
 
-padicsum(padicdiv([[0],4,3,3,3],padicsum([[0],3,2,2,2],[[0],2,3,1,3],5),5),[[-2],1,0,0,0],5);
+padic_sum(padic_divide([[0],4,3,3,3],padic_sum([[0],3,2,2,2],[[0],2,3,1,3],5),5),[[-2],1,0,0,0],5);
 [[-2],1,4,2,2]$
 
 alf:hensel(8/9,5,4);
@@ -253,7 +253,7 @@ alf:hensel(8/9,5,4);
 bet:hensel(1/2,5,4);
 [[0],3,2,2,2]$
 
-padicdiv(alf,bet,5);
+padic_divide(alf,bet,5);
 [[0],4,4,3,2]$
 
 hensel(1/333333,5,27);
@@ -264,61 +264,61 @@ hensel(1/333333,5,27);
 farey(17);
 [0,1/17,1/16,1/15,1/14,1/13,1/12,1/11,1/10,1/9,2/17,1/8,2/15,1/7,2/13,1/6,3/17,2/11,3/16,1/5,3/14,2/9,3/13,4/17,1/4,4/15,3/11,2/7,5/17,3/10,4/13,5/16,1/3,6/17,5/14,4/11,3/8,5/13,2/5,7/17,5/12,3/7,7/16,4/9,5/11,6/13,7/15,8/17,1/2,9/17,8/15,7/13,6/11,5/9,9/16,4/7,7/12,10/17,3/5,8/13,5/8,7/11,9/14,11/17,2/3,11/16,9/13,7/10,12/17,5/7,8/11,11/15,3/4,13/17,10/13,7/9,11/14,4/5,13/16,9/11,14/17,5/6,11/13,6/7,13/15,7/8,15/17,8/9,9/10,10/11,11/12,12/13,13/14,14/15,15/16,16/17,1]$
 
-henseltofarey([[2],3,0,0,0,0,0,0,0],7);
+hensel_to_farey([[2],3,0,0,0,0,0,0,0],7);
 147$
 
-henseltofarey([[0],4,4,4,4,4,4,4],5);
+hensel_to_farey([[0],4,4,4,4,4,4,4],5);
 -1$
 
-henseltofarey([[0],3,3,3,3,3,3,3],5);
+hensel_to_farey([[0],3,3,3,3,3,3,3],5);
 -3/4$
 
-henseltofarey([[0],0,0,0,0,0,0],5);
+hensel_to_farey([[0],0,0,0,0,0,0],5);
 0$
 
-henseltofarey([[0],2,3,1,5],7);
+hensel_to_farey([[0],2,3,1,5],7);
 9/43$
 
-henseltofarey([[0],0,2,4,1],5);
+hensel_to_farey([[0],0,2,4,1],5);
 5/8$
 
-henseltofarey([[1],2,4,1,4],5);
+hensel_to_farey([[1],2,4,1,4],5);
 5/8$
 
-henseltofarey([[-1],3,2,2,2],5);
+hensel_to_farey([[-1],3,2,2,2],5);
 1/10$
 
-henseltofarey([[0],3,2,2,2],5);
+hensel_to_farey([[0],3,2,2,2],5);
 1/2$
 
-henseltofarey([[0],2,3,1,3],5);
+hensel_to_farey([[0],2,3,1,3],5);
 1/3$
 
-henseltofarey([[0],0,6,0,6],7);
+hensel_to_farey([[0],0,6,0,6],7);
 -7/8$
 
-henseltofarey([[0],2,2,1,0],5);
+hensel_to_farey([[0],2,2,1,0],5);
 4/17$
 
-henseltofarey([[0],1,2,1,4],5);
+hensel_to_farey([[0],1,2,1,4],5);
 2/7$
 
-henseltofarey([[0],2,2,1,0],5);
+hensel_to_farey([[0],2,2,1,0],5);
 4/17$
 
-henseltofarey([[0],2,2,3,4],5);
+hensel_to_farey([[0],2,2,3,4],5);
 17/16$
 
-henseltofarey([[0],4,2,3,4],5);
+hensel_to_farey([[0],4,2,3,4],5);
 13/17$
 
-henseltofarey([[0],1,1,0,0,1,0],3);
+hensel_to_farey([[0],1,1,0,0,1,0],3);
 -13/17$
 
-henseltofarey([[0],1,2,1,4],5);
+hensel_to_farey([[0],1,2,1,4],5);
 2/7$
 
-henseltofarey([[0],3,4,2,3],5);
+hensel_to_farey([[0],3,4,2,3],5);
 11/7$
 
 /* Hensel codes of square roots */
@@ -329,46 +329,46 @@ sqrtmod(2,5);
 sqrtmod(2,7);
 [3,4]$
 
-padicsqrt(2,7);
+padic_sqrt(2,7);
 [215912063945802350977/152672884556058511392,2267891697076964737/1603641597827614272]$
 
 map(lambda([u],hensel(u,7,9)),%);
 [[[0],3,1,2,6,1,2,1,2,4],[[0],4,5,4,0,5,4,5,4,2]]$
 
-padicsqrt(7,3,3);
+padic_sqrt(7,3,3);
 [977/368,108497/41008]$
 
 map(lambda([u],hensel(u,3,6)),%);
 [[[0],1,1,1,0,2,0],[[0],2,1,1,2,0,2]]$
 
-henseltofarey(%[1],3);
+hensel_to_farey(%[1],3);
 1/25$
 
-padicsqrt(6,5)[1];
+padic_sqrt(6,5)[1];
 80746825394092993/32964753427463648$
 
 hensel(%,5,4);
 [[0],1,3,0,4]$
 
-padicsqrt(25,7);
+padic_sqrt(25,7);
 [552213837122886833247075521/110442767424206762611644736,5]$
 
 map(lambda([u],hensel(u,7,8)),%);
 [[[0],2,6,6,6,6,6,6,6],[[0],5,0,0,0,0,0,0,0]]$
 
-padicsqrt(-2,3);
+padic_sqrt(-2,3);
 [-28545857/22783264,28545857/22783264]$
 
 hensel(%[1],3,8);
 [[0],1,1,2,0,0,2,0,1]$
 
-padicsqrt(1,3,3);
+padic_sqrt(1,3,3);
 [1,3281/3280]$
 
 map(lambda([u],hensel(u,3,8)),%);
 [[[0],1,0,0,0,0,0,0,0],[[0],2,2,2,2,2,2,2,2]]$
 
-map(lambda([u],henseltofarey(u,3)),%);
+map(lambda([u],hensel_to_farey(u,3)),%);
 [1,-1]$
 
 (remvalue(l1,l2,h1,h2,t1,t2,al,be,dividend,divisor,d1,d2,alf,bet),remarray(h),0);

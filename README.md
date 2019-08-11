@@ -18,7 +18,9 @@ Topics covered are:
 * p-adic systems of linear equations
 
 **Remark**: Some functions in the package make use of the commands
-`firstn` and `lastn`, which require a Maxima version 5.41 or higher.
+`firstn` and `lastn`, which were introduced in Maxima 5.39.
+If `firstn` or `lastn` are not detected as built-in functions,
+equivalent functions are defined here.
 
 To install the package, simply copy `padics.mac` to your working
 directory, or make a global installation by copying the file to

@@ -1,0 +1,535 @@
+/*
+padics: A package for computations with p-adic numbers in Maxima
+
+Jose A Vallejo
+Facultad de Ciencias
+Universidad Autonoma de San Luis Potosi (Mexico)
+http://galia.fc.uaslp.mx/~jvallejo
+email:jvallejo@fc.uaslp.mx
+
+With contributions from R. Dodier
+
+Abstract: This is just a first attempt to create a Maxima package for
+working with p-adic numbers. It is extremely ugly and slow, lacking 
+anything remotely resembling elegance or optimization, but at least
+it gives correct answers (for all those examples that I have been
+able to find in the literature).
+The current version is suitable for basic courses on the subject of p-adic
+analysis, and maybe for constructiong examples of some simple theoretical
+constructions.
+Topics covered are:
+1. p-adic norm and distance
+2. Finite-segment representations of Q_p (Hensel codes)
+3. p-adic arithmetics
+4. Conversion from Hensel codes to rational functions
+5. Newton's method and square roots in Q_p
+6. p-adic systems of linear equations
+
+REMARK: Some functions in the package make use of the commands
+firstn and lastn, which were introduced in Maxima 5.39.
+If firstn or lastn are not detected as built-in functions,
+equivalent functions are defined here.
+*/
+
+ratprint:false$
+
+if ?fboundp (firstn) = false
+  then (print ("padics: no built-in function 'firstn'; I'll define my own."),
+        firstn (l, n) := block ([m: length(l)], if n >= m then l else rest (l, n - m)));
+
+if ?fboundp (lastn) = false
+  then (print ("padics: no built-in function 'lastn'; I'll define my own."),
+        lastn (l, n) := block ([m: length(l)], if n >= m then l else rest (l, m - n)));
+
+/*
+Let us first define the p-adic order of an integer
+*/
+
+padic_order_integer(n,p):=block([listaf,subind,lsubind],
+if is(equal(n,0)) then inf elseif (n>0) then
+(   
+listaf:ifactors(fix(ratnum(n))),
+subind:sublist_indices(listaf,lambda([x],first(x)=p)),
+lsubind:length(subind),
+return(if is(equal(lsubind,0)) then 0 else second(listaf[first(subind)]))
+)
+else
+(   
+listaf:ifactors(fix(ratnum(-n))),
+subind:sublist_indices(listaf,lambda([x],first(x)=p)),    
+lsubind:length(subind),
+return(if is(equal(lsubind,0)) then 0 else second(listaf[first(subind)]))
+)
+)$
+
+/*
+The function padic_order_integer will be used only as an auxiliary one. The actual p-adic order function,
+valid acting on any rational r, is this
+*/
+
+padic_order(r,p):=block([numerat,denomin,pp,qq,dd],
+if is(equal(r,0)) then inf else
+(
+numerat:fix(ratnum(r)),
+denomin:fix(ratdenom(r)),
+pp:padic_order_integer(numerat,p),
+qq:padic_order_integer(denomin,p),
+pp-qq
+)
+)$
+
+/*
+Reduction to the canonical form of a rational number
+		r=a/b=p^porder(r) a'/b'
+The result has the form of a list [p^porder(r),a'/b']
+*/
+
+padic_canonical(r,p):=block([numerat,denomin,pp,qq,dd],
+if is(equal(r,0)) then [1,0] else
+(
+numerat:fix(ratnum(r)),
+denomin:fix(ratdenom(r)),
+pp:padic_order_integer(numerat,p),
+qq:padic_order_integer(denomin,p),
+dd:pp-qq,
+[p^(dd),(numerat/p^pp)/(denomin/p^qq)]
+)
+)$
+
+/*
+Computation of the p-adic norm of a rational number
+*/
+
+padic_norm(r,p):=block([numerat,denomin,pp,qq],
+if is(equal(r,0)) then 0 else 
+(
+numerat:fix(ratnum(r)),
+denomin:fix(ratdenom(r)),
+pp:padic_order_integer(numerat,p),
+qq:padic_order_integer(denomin,p),
+p^(qq-pp)
+)
+)$
+
+/*
+The associated p-adic distance:
+*/
+
+padic_distance(x,y,p):=padic_norm(x-y,p)$
+
+/*
+Construction of Hensel (pseudo)codes, which basically are
+truncations of the p-adic expansions to a given order. 
+The output has the form [[exponent],mantissa]
+*/
+
+hensel(r,p,N):=block([tmp,ee,c,d,a,aux],local(c,d,a,aux),
+tmp:padic_canonical(r,p),
+ee:fix(radcan(log(tmp[1])/log(p))),
+c[1]:fix(ratnum(tmp[2])),
+d[1]:fix(ratdenom(tmp[2])),
+for j:0 thru N-1 do
+    (
+    a[ee+j]:mod(c[j+1]*inv_mod(d[j+1],p),p),
+    aux[j+1]:(c[j+1]/d[j+1]-a[ee+j])/p,
+    c[j+2]:fix(ratnum(aux[j+1])),
+    d[j+2]:fix(ratdenom(aux[j+1]))
+    ),
+cons([ee],makelist(a[ee+j],j,0,N-1))
+)$
+
+/*
+A command to display the result in the form commonly
+found in textbooks and expository works
+*/
+
+nicehensel(r,p,N):=block([tmp,ee,c,d,a,aux,AA],local(c,d,a,aux,AA),
+tmp:padic_canonical(r,p),
+ee:fix(log(tmp[1])/log(p)),
+c[1]:fix(ratnum(tmp[2])),
+d[1]:fix(ratdenom(tmp[2])),
+for j:0 thru N-1 do
+    (
+    a[ee+j]:mod(c[j+1]*inv_mod(d[j+1],p),p),
+    aux[j+1]:(c[j+1]/d[j+1]-a[ee+j])/p,
+    c[j+2]:fix(ratnum(aux[j+1])),
+    d[j+2]:fix(ratdenom(aux[j+1]))
+    ),
+AA:makelist(a[ee+j],j,0,N-1),
+if is(ee < 1) then simplode(append(endcons(".",firstn(AA,-ee)),lastn(AA,length(AA)+ee)))
+elseif is(ee >= 1) then simplode(append(cons(".",flatten(cons(makelist(0,k,1,ee),rest(AA,-ee))))))
+)$
+
+/*
+Some functions to do basic arithmetics: sums, 
+differences, products and divisions. Lots of
+auxiliary functions there
+*/
+
+padic_sum(l1,l2,p):=block([pp,gg,mm,n1,n2,rmdrs,carry,tot,token],
+pp:apply(min,append(l1[1],l2[1])),
+if (l1[1][1]>=l2[1][1]) then (gg:l1,mm:l2) else (gg:l2,mm:l1),
+if is(not(equal(gg[1][1],mm[1][1]))) then
+    (if (gg[1][1]*mm[1][1]<0) then (if is(length(rest(gg))>gg[1][1]-mm[1][1]) then
+        n1:append(makelist(0,k,1,(gg[1][1]-mm[1][1])),rest(rest(gg),-(gg[1][1]-mm[1][1])))
+        else
+        n1:firstn(append(makelist(0,k,1,(gg[1][1]-mm[1][1])),rest(gg)),length(rest(mm))))
+    else
+        n1:append(makelist(0,k,1,(gg[1][1]-mm[1][1])),rest(rest(gg),-(gg[1][1]-mm[1][1])))
+    )
+else n1:rest(gg),
+n2:rest(mm),
+rmdrs:map(lambda([x],divide(x,p)),n1+n2),
+carry:cons(0,rest(map(first,rmdrs),-1)),
+tot:map(second,rmdrs)+carry,
+token:apply("+",carry),
+while (is(not(equal(token,0)))) do
+    (
+    rmdrs:map(lambda([x],divide(x,p)),tot),
+    carry:cons(0,rest(map(first,rmdrs),-1)),
+    tot:map(second,rmdrs)+carry,
+    token:apply("+",carry)
+    ),
+cons([pp],tot)
+)$
+
+hensel_complement(h,p):=block([tmp],
+tmp:(p-1)-rest(h),
+tmp[1]:tmp[1]+1,
+cons(first(h),tmp)
+)$
+
+padic_substract(l1,l2,p):=padic_sum(l1,hensel_complement(l2,p),p)$
+
+redu(p,u,ll):=block([tmp1,tmp2,rmdr,carry,tot,token],
+	tmp1:map(lambda([z],divide(z,p)),u*ll),
+	tmp2:map(second,tmp1),
+	rmdr:map(first,tmp1),
+	carry:cons(0,rest(rmdr,-1)),
+	tot:tmp2+carry,
+	token:apply("+",carry),
+	while (is(not(equal(token,0)))) do
+	    (
+	    tmp1:map(lambda([z],divide(z,p)),tot),
+	    tmp2:map(second,tmp1),
+	    rmdr:map(first,tmp1),
+	    carry:cons(0,rest(rmdr,-1)),
+	    tot:tmp2+carry,
+	    token:apply("+",carry)
+	    ),
+	    tot
+)$
+
+padic_sumb(l1,l2,p):=block([rmdrs,carry,tot,token],
+rmdrs:map(lambda([x],divide(x,p)),l1+l2),
+carry:cons(0,rest(map(first,rmdrs),-1)),
+tot:map(second,rmdrs)+carry,
+token:apply("+",carry),
+while (is(not(equal(token,0)))) do
+    (
+    rmdrs:map(lambda([x],divide(x,p)),tot),
+    carry:cons(0,rest(map(first,rmdrs),-1)),
+    tot:map(second,rmdrs)+carry,
+    token:apply("+",carry)
+    ),
+tot
+)$
+
+
+padic_multiply(l1,l2,p):=block([l1b,l2b,pp,bigl,lon,tmp],local(tmp),
+l1b:rest(l1),
+l2b:rest(l2),
+pp:first(l1[1])+first(l2[1]),
+bigl:makelist(flatten(cons(rest(makelist(0,k,1,j)),rest(redu(p,l2b[j],l1b),1-j))),j,1,length(l2b)),
+lon:length(bigl),
+tmp[1]:bigl[1],
+for k:2 thru lon do
+(
+tmp[k]:padic_sumb(tmp[k-1],bigl[k],p)
+),
+cons([pp],tmp[lon])
+)$
+
+hensel_complementb(h,p):=block([tmp],
+tmp:(p-1)-h,
+tmp[1]:tmp[1]+1,
+tmp
+)$
+
+padic_substractb(l1,l2,p):=block([rmdrs,carry,tot,token],
+rmdrs:map(lambda([x],divide(x,p)),l1+hensel_complementb(l2,p)),
+carry:cons(0,rest(map(first,rmdrs),-1)),
+tot:map(second,rmdrs)+carry,
+token:apply("+",carry),
+while (is(not(equal(token,0)))) do
+    (
+    rmdrs:map(lambda([x],divide(x,p)),tot),
+    carry:cons(0,rest(map(first,rmdrs),-1)),
+    tot:map(second,rmdrs)+carry,
+    token:apply("+",carry)
+    ),
+tot
+)$
+
+padic_multiplyb(u,ll,p):=block([rmdrs,carry,tot,token],
+rmdrs:map(lambda([x],divide(x,p)),u*ll),
+carry:cons(0,rest(map(first,rmdrs),-1)),
+tot:map(second,rmdrs)+carry,
+token:apply("+",carry),
+while (is(not(equal(token,0)))) do
+    (
+    rmdrs:map(lambda([x],divide(x,p)),tot),
+    carry:cons(0,rest(map(first,rmdrs),-1)),
+    tot:map(second,rmdrs)+carry,
+    token:apply("+",carry)
+    ),
+tot
+)$
+
+padic_dividei(l1,l2,p):=block([invd0,quot,tmp,rmd,token,par,counter],local(tmp,rmd),
+invd0:inv_mod(second(l2),p),
+quot:first(l1[1])-first(l2[1]),
+counter:1,
+tmp:[],
+par:mod(invd0*rest(l1)[counter],p),
+tmp:endcons(par,tmp),
+rmd:padic_substractb(rest(l1),rest(padic_multiplyb(par,rest(l2),p),1-counter),p),
+token:apply("+",rmd),
+if is(equal(token,0)) then return(cons([quot],  append(tmp,makelist(0,k,1,length(l2)-2))  )) else do
+(counter:counter +1,
+while (is(not(equal(token,0)))) do
+    (
+    par:mod(invd0*rmd[counter],p),
+    rmd:padic_substractb(rmd,flatten(cons(makelist(0,k,1,counter-1),rest(padic_multiplyb(par,rest(l2),p),1-counter))),p),
+    token:apply("+",rmd),
+    tmp:endcons(par,tmp),
+    counter:counter+1
+    ),
+if is(counter > length(l1)-1) then return(cons([quot],tmp))
+else return(cons([quot],append(tmp,makelist(0,s,1,length(l1)-counter))))
+) /*Hay que cortar el ultimo elemento si token llego al final y rellenar con ceros si se quedo a mitad de camino. */
+  /* Eso se hace mirando el valor de counter */
+)$
+
+/*
+The next function normalizes the Hensel code
+so that the first digit after the dot is not
+zero:
+*/
+
+normalize_hensel(lista):=block([s,ss],
+if is(equal(unique(rest(lista)),[0])) then lista
+else
+(s:first(lista[1]),
+ss:first(sublist_indices(rest(lista),lambda([z],is(not(equal(z,0)))))),
+cons([ss+s-1],rest(lista,ss)))
+)$
+
+padic_divide(l1,l2,p):=block([lon1,lon2,lon,s1,s2,tmp],
+lon1:length(normalize_hensel(l2)),
+lon2:length(l2),
+if is(lon1 < lon2)
+then 
+(
+lon:lon2 - lon1,
+s1:rest(l1,-lon),
+s2:normalize_hensel(l2),
+tmp:padic_dividei(s1,s2,p),
+cons([first(tmp[1])-lon],flatten(cons(makelist(0,k,1,lon),rest(tmp))))   
+    )
+else
+padic_dividei(l1,l2,p)  
+)$
+
+/*
+A function to generate Farey fractions. For n>125
+this becomes extremely slow. If speed is really 
+needed it is better to try LISP directly:
+
+:lisp (defun farey (n)
+  (labels ((helper (begin end)
+	     (let ((med (/ (+ (numerator begin) (numerator end))
+			   (+ (denominator begin) (denominator end)))))
+	       (if (<= (denominator med) n)
+		   (append (helper begin med)
+			   (list med)
+			   (helper med end))))))
+      (append (list 0) (helper 0 1) (list 1))))
+
+Use it as
+:lisp (farey 100)
+*/
+
+farey(n):=listify(setify(xreduce('append,makelist(makelist(i/j,i,0,j),j,floor(n/2),n))))$
+
+/*
+Functions for converting Hensel codes to
+Farey fractions
+*/
+
+hensel_zerodetect(ll):=is(equal(sublist_indices(rest(ll),lambda([x],is(not(equal(x,0))))),[1]))$
+
+hensel_pdetect(ll,p):=is(equal(unique(rest(ll,2)),[p-1]))$
+
+hensel_to_fareyaux(lista,p):=block(
+    [normli:normalize_hensel(lista),lnormli,ll:rest(lista),r:length(lista)-1,m,N,k,a,b,q,c,soln:0],
+    local(a,b,q,c),
+lnormli:length(normli),
+if is(equal(unique(rest(lista)),[0])) then return(0) elseif
+hensel_zerodetect(lista) then return(second(lista)*p^(first(first(lista)))) elseif
+hensel_pdetect(lista,p) then return(second(lista)-p) elseif
+    is(equal(unique(lastn(rest(lista),ceiling(r/2))),[0])) then return(sum(rest(lista)[k]*p^(k-1),k,1,floor(r/2))) else (
+m:p^r,
+N:ceiling(sqrt((m-1)/2)),
+k:apply("+",reverse(ll)*makelist(p^i,i,r-1,0,-1)),
+a[-1]:m,a[0]:k,b[-1]:0,b[0]:1,/* a[0]=c must be <m and such that gcd(c,m)=1 */
+for i:1 step 1 while is(not(equal(a[i-1],0))) do (
+    q[i]:first(divide(a[i-2],a[i-1])),
+    a[i]:second(divide(a[i-2],a[i-1])),
+    b[i]:b[i-2]-q[i]*b[i-1],
+    c[i]:firstn(normalize_hensel(hensel(a[i]/b[i],p,r)),lnormli),
+    block(if (c[i]=normli and ((abs(a[i])>0 and abs(a[i])<=N) and (abs(b[i])>0 and abs(b[i])<=N))) then return(soln:a[i]/b[i])) 
+            /*It seems that return only exits from here but not from the parent function, hence the line below*/
+    ),
+if soln#0 then return(soln) else /*A second round relaxing conditions on the denominator*/
+for i:1 step 1 while is(not(equal(a[i-1],0))) do (
+    block(if (c[i]=normli and ((a[i]>0 and a[i]<=N) and (b[i]>0))) then return(soln:a[i]/b[i]))       
+        ),
+if soln#0 then return(soln) else print("Error: I can not compute this!")
+        )
+)$
+
+/*
+A limitation of this code is that it assumes the Hensel
+code given in normalized form, that is, as [[0],a0,...,ak].
+If we have something like [[1],a1,...,ak] it will fail
+miserably. We take this fact into account in the final
+version below:
+*/
+
+hensel_to_farey(lista,p):=block([m:first(flatten(lista))],
+if is(equal(m,0)) then  
+    hensel_to_fareyaux(lista,p)
+else
+    p^m*hensel_to_fareyaux(append([[0]],rest(lista)),p) 
+)$
+
+/*
+Hensel codes of square roots
+*/
+
+sqrtmod(n,p):=block([legsym,q:mod(n,p),k],
+legsym:mod(n^((p-1)/2),p),
+if is(equal(mod(legsym+1,p),0)) then return("Not a quadratic residue")
+else
+(
+  k:1,
+  while is(not(equal(mod(k*k,p),q))) do k:k+1
+),
+[k,mod(-k,p)]
+)$
+
+/*
+If n is a quadratic residue modulo p with root x,
+then another root is given by the y such that 
+y=-x mod p. We compute the padic roots with Newton's
+method 
+*/
+
+padic_sqrt(n,p,[k]):=block([tmp,iter],local(iter1,iter2),
+tmp:sqrtmod(n,p),
+if is(stringp(tmp)) then return("There does not exist a square root")
+elseif is(equal(length(k),0)) then
+(iter1[0]:tmp[1],for j:0 thru 4 do iter1[j+1]:(iter1[j]+n/iter1[j])/2,
+ iter2[0]:tmp[2],for j:0 thru 4 do iter2[j+1]:(iter2[j]+n/iter2[j])/2,       
+ [iter1[5],iter2[5]])
+else
+(iter1[0]:tmp[1],for j:0 thru first(k)-1 do (iter1[j+1]:(iter1[j]+n/iter1[j])/2),
+ iter2[0]:tmp[2],for j:0 thru first(k)-1 do (iter2[j+1]:(iter2[j]+n/iter2[j])/2),
+ [iter1[first(k)],iter2[first(k)]])
+)$
+
+/*
+p-adic systems of linear equations. We solve them
+by the Gauss method
+*/
+
+/*
+A substitute of `innerproduct' for p-adics
+*/
+
+padic_inner_product(l1,l2,p):=block([pp],local(pp),
+pp:makelist(padic_multiply(l1[i],l2[i],p),i,1,length(l1)),
+xreduce(lambda([[x]],padic_sum(x[1],x[2],p)),pp)
+)$
+
+/*
+The function for backsubstitution
+*/
+
+padic_backsub(M,p):=block([n:length(M),t:length(rest(flatten(M[1,1]))),x,ratprint:false],local(x),
+x:makelist(cons([0],makelist(0,k,1,t)),j,1,n),
+x[n]:padic_divide(M[n][n+1],M[n][n],p),
+for i:n-1 thru 1 step -1 do
+    x[i]:padic_divide(padic_substract(M[i][n+1],padic_inner_product(rest(list_matrix_entries(row(M,i)),-1),x,p),p),M[i][i],p),
+x
+)$
+
+padic_normh(lista,p):=p^(-first(flatten(lista)))$
+
+nonzeroprod(ll):=apply("*",makelist(abs(ll[k]),k,sublist_indices(ll,lambda([x],is(not(equal(x,0)))))))$
+
+/*
+A condition for chosing the number of digits.
+Valid when the coefficient matrix is rational
+*/
+
+digitsnumber(A,p):=block([tmp],
+if is(p<=11) then /* the choice p=11 is completly arbitrary. It is because log(p)>=2.5 for p>=13 */
+   (tmp:floor(log(2*sqrt(product(apply("+",(rest(A[i],-1))^2),i,1,length(A)))*nonzeroprod(last(transpose(A))))/log(p)),
+    if is(tmp <= 0) then 8 elseif (is(evenp(tmp))) then min(max(tmp,4),8) else min(max(tmp+1,4),8))
+else
+   (tmp:2*floor(log(2*sqrt(product(apply("+",(rest(A[i],-1))^2),i,1,length(A)))*nonzeroprod(last(transpose(A))))/log(p)),
+    if is(tmp <= 0) then 8 else min(max(tmp,4),8)) 
+)$
+
+
+/*
+The preceding function selects automatically the
+number of digits t to be displayed in Hensel codes.
+While this is appropriate when the digits of A,b 
+are of small magnitude, it leads to very high values
+when digits >10 are present. As a consequence, the
+cost of computations become excessive. Thus we have
+included a small heuristics to fix a maximum of t=8,
+that should suffice for simple computations
+*/
+
+
+padic_gauss(BBB,p,[tp]):=block([t,m:length(BBB),n:length(transpose(BBB)),B2H,A,h,k,c,tmp,r,f],local(B2H,A),
+/*
+There will be a lot of situations where our simple
+heuristics for choosing t will lead to bad values.
+For those cases, one can manually choose t
+*/
+if is(equal(length(tp),0)) then t:digitsnumber(BBB,p) else t:first(tp),
+B2H[i,j]:=hensel(BBB[i][j],p,t),
+A:genmatrix(B2H,m,n),
+h:1,k:1,c:0,
+while is((h<m) and (k<n)) do (
+    tmp:lmax(makelist(padic_normh(A[j,k],p),j,h,m)),
+    r:first(sublist_indices(makelist(A[j,k],j,h,m),lambda([x],padic_normh(x,p)='tmp))),
+    if is(equal(A[r,k],cons([0],makelist(0,j,1,t)))) then k:k+1 else (
+    A:rowswap(A,h,r+c),
+    for i:h+1 thru m do (
+            f:padic_divide(A[i,k],A[h,k],p),
+            A[i,k]:cons([0],makelist(0,j,1,t)),
+            for j:k+1 thru n do A[i,j]:padic_substract(A[i,j],padic_multiply(f,A[h,j],p),p)
+            ),
+    h:h+1,
+    k:k+1,
+    c:c+1
+            )
+    ),
+A 
+)$

@@ -1,0 +1,559 @@
+\input texinfo
+
+@setfilename padics.info
+@settitle Package padics
+
+@ifinfo
+@macro var {expr}
+<\expr\>
+@end macro
+@end ifinfo
+
+@dircategory Mathematics/Maxima
+@direntry
+* Package padics: (maxima)Maxima package for p-adic computations.
+@end direntry
+
+@node Top, Introduction to package padics, (dir), (dir)
+@top
+@menu
+* Introduction to package padics::
+* Definitions for package padics::
+* Function and variable index::
+@end menu
+@chapter Package padics
+
+@node Introduction to package padics, Definitions for package padics, Top, Top
+@section Introduction to package padics
+
+Package @code{padics} implements some Maxima functions for computing with
+p-adic numbers, where p stands for a prime number. These numbers, whose set
+is denoted @strong{Q}@sub{p}, are obtained by a process of completion of the usual
+rational numbers but with respect to a p-adic norm, which is different from
+the Euclidean norm on @strong{Q} (the absolute value). The p-adic norm of a
+rational number @math{r=a/b} is obtained as follows: factor out all the powers of @var{p}
+in the numerator and the denominator, and simplify them so you get
+@math{r=p}@sup{@var{g}}@math{(a'/b')}. For example, if @var{p=3} and @math{r=36/15}
+
+@example
+@math{36/15=3}@sup{@var{2}}@math{*4/(3*5)=3*(4/5)}
+@end example
+
+The exponent @var{g} of @var{p} in this reduced expression is called the p-adic order
+of the rational @var{r}; thus, @math{padicorder(36/15)=1} if @math{p=3}. 
+Using the built-in functions of the package, we would do
+
+@example
+(%i1)	load("padics.mac");
+(%o1)	"padics.mac"
+(%i2)	padic_order(36/15,3);
+(%o2)	1
+@end example
+
+Then, the p-adic norm of the
+rational @var{r}, denoted @math{|r|}@sub{@var{p}}, is @math{1/p}@sup{@var{g}}.
+In the example above,
+
+@example
+@math{|36/15|}@sub{@var{3}}@math{=1/(3^1)}
+@end example
+
+and using the package,
+
+@example
+(%i3)	padic_norm(36/15,3);
+(%o3)	1/3
+@end example
+
+Intuitively, we can say that in the p-adic norm, a rational is @i{small}
+if it is divisible by a big power of @var{p}, so a @i{big} number is one that
+is coprime with @var{p}, or contains higher powers of @var{p} only in the denominator.
+
+Of course, once defined the p-adic norm, there is also a p-adic distance between
+rational numbers @var{r} and @var{s}, given by @math{|r-s|}@sub{@var{p}}. This distance is @i{ultrametric},
+which means that it satisfies the triangle @i{equality}:
+
+@example
+@math{|r+s|}@sub{@var{p}}@math{ = max(|r|}@sub{@var{p}}@math{,|s|}@sub{@var{p}}@math{)} (if @var{r},@var{s} are not equal).
+@end example
+
+A geometric consequence of this fact is that in the p-adic plane, every
+triangle is isosceles (see the readable paper by P. N. Natarajan and K. N. Ranganathan,
+@i{A geometry where all triangles are isosceles}, Resonance 5(10) (2012) 32-42).
+
+Just as every real number (resulting from the completion with respect to
+the absolute value norm) can be represented by a decimal expansion, in such
+a way that rationals correspond precisely to reals with a finite or periodic
+decimal expansion, elements of @strong{Q}@sub{p} can be represented by p-adic
+expansions (in powers, both positive and negative, of a prime number @var{p}), 
+where the coefficients are integers
+between @var{0} and @var{p-1} @i{modulo p}. Notice, however, that the convergence
+of these series is considered with respect to the p-adic norm, and not the absolute value.
+This has some striking consequences: for instance, the series of rational
+numbers whose general term is @math{r}@sub{@var{n}} is sumable in @strong{Q}@sub{p} if and only if the 
+limit of @math{|r}@sub{@var{n}}@math{|}@sub{@var{p}} when @var{n} tends to infinity is zero!
+(This is sometimes dubbed as @slanted{the bad student's dream}). Thus, the series with general term
+@math{p}@sup{@var{n}} is convergent in @strong{Q}@sub{p}, and being geometric its sum equals 
+@math{1/(1-p)=-1/(p-1)} (this fact, that a certain notion of convergence can lead to
+a negative number when adding up infinite positive numbers, is an endless source of fun in the
+internet forums). Another difference with the real case is that a convergent series
+is unconditionally convergent, so reorderings have no effect (the proof of these facts
+can be found in the book by F. Q. Gouv@^ea, @i{p-adic Numbers} (Springer Verlag, 2003)).
+
+When we represent p-adic numbers by truncating their p-adic expansions at
+a certain length, we get what are called their Hensel codes. For instance,
+in @strong{Q}@sub{3} we have seen that the series with general term @math{3}@sup{@var{n}} converges
+to @math{-1/2}. Hence
+
+@example
+@math{-1/2 = 1*3^0 + 1*3^1 + 1*3^2 + 1*3^3 + ...}
+@end example
+
+so we could represent @math{-1/2} by a list of the form @math{[[0],1,1,1,...]}. The first
+element @math{[0]} is another list with only one element, indicating at which power
+of @var{p} we begin to count, and the remaining elements give the coefficients of
+@math{-1/2} in its expansion with respect to powers of @var{p}. If we choose to work with
+truncated expressions of length @math{4}, then we would have that @math{-1/2} is represented
+by the Hensel code @math{[[0],1,1,1,1]}. In the syntax of the @code{padics} package:
+
+@example
+(%i4)	hensel(-1/2,3,4)
+(%o4)	[[0],1,1,1,1]
+@end example
+
+That is: the Hensel code of @math{-1/2} in @strong{Q}@sub{3}, truncated at length @math{4} is @math{[[0],1,1,1,1]}.
+It is possible to define the usual arithmetic operations on Hensel codes:
+we can add, substract, multiply and divide them, and the result will be another
+Hensel code which will represent a p-adic number. The computations have a distinctive
+feature: they are carried on @slanted{from left to right}, modulo @var{p}, in contrast to
+the operations with real numbers. As these operations are defined
+on lists of a definite length, they are collectively called a @i{finite segment arithmetic}.
+Consider for example the representation on the number @math{2/3} in @strong{Q}@sub{3}. 
+Clearly we can write
+
+@example
+@math{2/3 = 2*3^(-1) + 0*3^0 + 0*3^1 +0*3^2 + 0*3^3 + ... }
+@end example
+
+so its Hensel code of length @math{4} would be @math{[[-1],2,0,0,0]} (because we begin to
+count at the power @math{3}@sup{@var{-1}}, which is accompanied by the coefficient @math{2}, and the
+remaining coefficients are all @math{0}).  Notice that adding their expansions we get
+
+@example
+@math{-1/2 + 2/3 = 1*3^0 + 1*3^1 + 1*3^2 + 1*3^3 + ... + 2*3^(-1) + 0*3^0 + 0*3^1 +0*3^2 + 0*3^3 + ...}
+@end example
+
+so, grouping coefficients of the same power and keeping the length as @math{4},
+
+@example
+@math{-1/2 + 2/3 = 2*3^(-1) +1*3^0 + 1*3^1 + 1*3^2 + ... = [[-1],2,1,1,1]}
+@end example
+
+On the other hand, the sum @math{-1/2 + 2/3} equals @math{1/6}. What is the Hensel code of
+@math{1/6} in @strong{Q}@sub{3} (with length @math{4})? We can use the preceding results as follows:
+
+@example
+@math{1/6 = 1/3*(1/2) = 1/3*(1-1/2) = 1/3*(1*3^0 + 1*3^0 +1*3^1 +1*3^1 + ...) = 2*3^(-1) +1*3^0 + 1*3^1 + 1*3^2 + ...}
+@end example
+
+which is the same as above, that is, @math{1/6 = [[-1],2,1,1,1]}. We can check all these
+computations with the following commands (notice how we declare the value @math{p=3} as
+an argument in both of them):
+
+@example
+(%i5)	padic_sum([[0],1,1,1,1],[[-1],2,0,0,0],3);
+(%o5)	[[-1],2,1,1,1]
+(%i6)	hensel_to_farey([[-1],2,1,1,1],3);
+(%o6)	1/6
+@end example
+
+Thus, it is possible to represent p-adic numbers by Hensel codes and to define
+the four usual arithmetic operations on these, following some simple rules. As
+a consequence, other operations such as taking square roots, can be performed
+given the appropriate conditions (if we are computing on @strong{Q}@sub{p}, only
+quadratic residues modulo @var{p} have roots). For instance, we can compute
+the square roots of @math{r=25} in @strong{Q}@sub{7} using @code{padic_sqrt}
+as follows:
+
+@example
+(%i7)	padic_sqrt(25,7);
+(%o7)	[552213837122886833247075521/110442767424206762611644736,5]
+(%i8)	map(lambda([u],hensel(u,7,8)),%);
+(%o8)	[[[0],2,6,6,6,6,6,6,6],[[0],5,0,0,0,0,0,0,0]]
+@end example
+
+
+A more difficult computation is: given a certain Hensel
+code, how to recover a rational approximation to the p-adic number it represents?
+The mathematics behind the algorithm are quite involved, and can be consulted
+in the book by R. T. Gregory and E. V. Krishnamurthy, 
+@i{Methods and Applications of Error-Free Computation} (Springer Verlag, 1984).
+The set of rationals that represent the p-adic numbers in a given finite segment
+are known as Farey fractions, hence the name @code{hensel_to_farey} for the command
+above. The Farey sequence of fractions of order @var{n} is the sequence of all
+reduced fractions between @var{0} and @var{1} whose denominator is less than or
+equal to @var{n}, arranged in order of increasing size.
+
+
+The package @code{padics} contains functions for computing the p-adic order and norm of
+rational numbers, and the p-adic distance between two of them. Also, there are
+functions to obtain the Hensel code of a rational and vice-versa (the Farey fraction 
+representing a given Hensel code). The sum, difference,
+product and quotient of rationals in @strong{Q}@sub{p} are implemented, as well as more advanced
+functions for computing square roots and solving linear systems of equations by the
+method of Gaussian elimination. The accompanying documentation file @code{padics-doc.pdf}
+describes a Maxima session using the commands in the package and contains lots of examples.
+The session is also available as a wxMaxima worksheet @code{padics-doc.wxm}.
+
+@node Definitions for package padics, Function and variable index, Introduction to package padics, Top
+@section Definitions for package padics
+
+@deffn {Function} padic_order (@var{r}, @var{p})
+
+Computes the @var{p}-adic order of the rational number @var{r}.
+
+@code{load("padics.mac")} loads this function.
+
+Example:
+
+@example
+(%i1)	padic_order(3/10,5);
+(%o1)	-1
+@end example
+
+@end deffn
+
+@deffn {Function} padic_canonical (@var{r}, @var{p})
+
+Computes the canonical form of the rational number @var{r} with respect to @var{p}:
+@math{r=a/b=p}@sup{padic_order(r)}@math{a'/b'}. The result has the form of
+a list @math{[p}@sup{padic_order(r)}@math{,a'/b']}.
+
+@code{load("padics.mac")} loads this function.
+
+Example:
+
+@example
+(%i1)	padic_canonical(0.234,2);
+(%o1)	[1/4,117/125]
+(%i2)	padic_canonical(0,3);
+(%o2)	[1,0]
+@end example
+
+@end deffn
+
+@deffn {Function} padic_norm (@var{r}, @var{p})
+
+Computes the @var{p}-adic norm of the rational number @var{r}.
+
+@code{load("padics.mac")} loads this function.
+
+Example:
+
+@example
+(%i1)	makelist(padic_norm(140/297,k),k,[2,3,5,7,11]);
+(%o1)	[1/4,27,1/5,1/7,11]
+@end example
+
+@end deffn
+
+@deffn {Function} padic_distance (@var{x}, @var{y}, @var{p})
+
+Computes the @var{p}-adic distance between @var{x} and @var{y}.
+
+@code{load("padics.mac")} loads this function.
+
+Example:
+
+@example
+(%i1)	padic_distance(2166^2,2,7);
+(%o1)	1/2401
+(%i2)	padic_distance(82,1,3);
+(%o2)	1/81
+@end example
+
+@end deffn
+
+@deffn {Function} hensel (@var{r}, @var{p}, @var{N})
+
+Computes the @var{p}-adic Hensel code of length @var{N} for the rational number @var{r}.
+The result is a list of the form @math{[[e],a0,a1,a2,...,aN]}, where @var{e} is the
+exponent of the code and @math{a0a1...aN} is the mantissa.
+
+@code{load("padics.mac")} loads this function.
+
+Example:
+
+@example
+(%i1)	hensel(7/6,5,4);
+(%o1)	[[0],2,4,0,4]
+(%i2)	hensel(1/25,5,4);
+(%o2)	[[-2],1,0,0,0]
+(%i3)	hensel(-7/8,3,5);
+(%o3)	[[0],1,2,1,2,1]
+@end example
+
+@end deffn
+
+@deffn {Function} nicehensel (@var{r}, @var{p}, @var{N})
+
+Computes the @var{p}-adic Hensel code of length @var{N} for the rational number @var{r},
+but displays the result in the form commonly found in textbooks and expository works,
+that is, something like
+@example
+       @math{r = a}@sub{-e}@math{...a}@sub{-1}@math{.a}@sub{0}@math{a}@sub{1}@math{a}@sub{2}@math{...}
+@end example
+where @var{e} is the order of @var{r}. The result is a string (not a number).
+
+@code{load("padics.mac")} loads this function.
+
+Example:
+
+@example
+(%i1)	nicehensel(8/3,5,9);
+(%o1)	.123131313
+(%i2)	nicehensel(2/15,5,7);
+(%o2)	4.131313
+(%i3)	nicehensel(-1/3,5,7);
+(%o3)	.3131313
+(%i4)	stringp(%);
+(%o4)	true
+@end example
+
+@end deffn
+
+@deffn {Function} normalize_hensel (@var{list})
+
+normalizes the Hensel code @var{list} so that the
+first digit after the dot is not zero.
+
+@code{load("padics.mac")} loads this function.
+
+Example:
+
+@example
+(%i1)	normalize_hensel([[-1],0,0,1,2,3]);
+(%o1)	[[1],1,2,3]
+@end example
+
+@end deffn
+@deffn {Function} padic_sum (@var{l1}, @var{l2}, @var{p})
+
+Computes the sum of the Hensel codes @var{l1} and @var{l2} in @strong{Q}@sub{p}.
+
+@code{load("padics.mac")} loads this function.
+
+Example:
+
+@example
+(%i1)	padic_sum([[2],2,5,1,5],[[-3],3,3,3,2],7);
+(%o1)	[[-3],3,3,3,2]
+(%i2)	h1:hensel(2/3,5,9);
+(h1)	[[0],4,1,3,1,3,1,3,1,3]
+(%i3)	h2:hensel(5/6,5,9);
+(h2)	[[1],1,4,0,4,0,4,0,4,0]
+(%i4)	padic_sum(h1,h2,5);
+(%o4)	[[0],4,2,2,2,2,2,2,2,2]
+@end example
+
+@end deffn
+
+@deffn {Function} padic_substract (@var{l1}, @var{l2}, @var{p})
+
+Computes the difference of the Hensel codes @var{l1} and @var{l2} in @strong{Q}@sub{p}.
+
+@code{load("padics.mac")} loads this function.
+
+Example:
+
+@example
+(%i1)	padic_substract(hensel(3/4,5,4),hensel(3/2,5,4),5);
+(%o1)	[[0],3,3,3,3]
+@end example
+
+@end deffn
+
+@deffn {Function} padic_multiply (@var{l1}, @var{l2}, @var{p})
+
+Computes the product of the Hensel codes @var{l1} and @var{l2} in @strong{Q}@sub{p}.
+
+@code{load("padics.mac")} loads this function.
+
+Example:
+
+@example
+(%i1)	t1:hensel(4/15,5,4);
+(t1)	[[-1],3,3,1,3]
+(%i2)	t2:hensel(5/2,5,4);
+(t2)	[[1],3,2,2,2]
+(%i3)	padic_multiply(t1,t2,5);
+(%o3)	[[0],4,1,3,1]
+@end example
+
+@end deffn
+
+@deffn {Function} padic_divide (@var{l1}, @var{l2}, @var{p})
+
+Computes the division of the Hensel code @var{l1} by the Hensel code @var{l2} in @strong{Q}@sub{p}.
+
+@code{load("padics.mac")} loads this function.
+
+Example:
+
+@example
+(%i1)	dividend:[[0],4,1,3,1,3,1,3];
+(dividend)	[[0],4,1,3,1,3,1,3]
+(%i2)	divisor:[[0],3,4,2,4,2,4,2];
+(divisor)	[[0],3,4,2,4,2,4,2]
+(%i3)	padic_divide(dividend,divisor,5);
+(%o3)	[[0],3,1,0,0,0,0,0]
+@end example
+
+@end deffn
+
+@deffn {Function} farey (@var{n})
+
+Generates the Farey sequence of fractions of order @var{n}.
+
+@code{load("padics.mac")} loads this function.
+
+Example:
+
+@example
+(%i1)	farey(8);
+(%o1)	[0,1/8,1/7,1/6,1/5,1/4,2/7,1/3,3/8,2/5,3/7,1/2,4/7,3/5,5/8,2/3,5/7,3/4,4/5,5/6,6/7,7/8,1]
+@end example
+
+@end deffn
+
+@deffn {Function} hensel_to_farey (@var{list}, @var{p})
+
+Given a Hensel code @var{list}, @code{hensel_to_farey} computes its
+Farey fraction, a rational number close in @strong{Q}@sub{p}
+to the rational number represented by @var{list}.
+
+@code{load("padics.mac")} loads this function.
+
+Example:
+
+@example
+(%i1)	hensel_to_farey([[0],3,3,3,3,3,3,3],5);
+(%o1)	-3/4
+(%i2)	hensel_to_farey([[0],2,3,1,5],7);
+(%o2)	9/43
+(%i3)	hensel_to_farey([[-1],3,2,2,2],5);
+(%o3)	1/10
+(%i4)	hensel(1/10,5,4);
+(%o4)	[[-1],3,2,2,2]
+@end example
+
+@end deffn
+
+@deffn {Function} sqrtmod (@var{n}, @var{p})
+
+Determines whether @var{n} is a quadratic residue modulo @var{p} or not.
+If the answer is negative, it prints a message. In the affirmative case,
+it returns a list @math{[k,mod(-k,p)]} where @var{k} is such that
+@math{k}@sup{2}@math{=n mod p}.
+
+
+@code{load("padics.mac")} loads this function.
+
+Example:
+
+@example
+(%i1)	sqrtmod(2,5);
+(%o1)	Not a quadratic residue
+(%i2)	sqrtmod(2,7);
+(%o2)	[3,4]
+@end example
+
+@end deffn
+
+@deffn {Function} padic_sqrt (@var{n}, @var{p}, @var{[k]})
+
+Computes the square roots of @var{n} in @strong{Q}@sub{p} using Newton's method.
+The optional argument @var{k} determines the number of iterations.
+
+@code{load("padics.mac")} loads this function.
+
+Example:
+
+@example
+(%i1)	padic_sqrt(7,3,3);
+(%o1)	[977/368,108497/41008]
+(%i2)	padic_sqrt(6,5)[1];
+(%o2)	80746825394092993/32964753427463648
+@end example
+
+@end deffn
+
+@deffn {Function} padic_gauss (@var{M}, @var{p}, @var{[t]})
+
+Given a linear system of equations @math{Ax=b}, where @math{A} is a square
+matrix of order @math{m} whose coefficients are rational numbers, and @math{b}
+is a column matrix of dimension @math{m}@code{x}@math{1}, let @math{M} be the augmented
+matrix @math{M=A|b}. Then, @code{padic_backsub} triangularizes the system
+using the arithmetic in @strong{Q}@sub{p} (so the triangularized system
+it returns has Hensel codes as coefficients). A heuristic routine is used
+to determine the number of digits in the resulting Hensel codes (never
+more than @var{8} to avoid an excessive computational cost). The optional
+argument @var{t} allows the user to fix the number of digits to be used.
+
+@code{load("padics.mac")} loads this function.
+
+Example:
+
+@example
+(%i1)	D:matrix([3,1,3,16],[1,3,1,8],[1,1,3,12]);
+(D)	matrix(
+		[3,	1,	3,	16],
+		[1,	3,	1,	8],
+		[1,	1,	3,	12]
+	)
+(%i2)	padic_gauss(D,11);
+(%o2)	matrix(
+		[[[0],3,0,0,0],	[[0],1,0,0,0],	[[0],3,0,0,0],	[[0],5,1,0,0]],
+		[[[0],0,0,0,0],	[[0],10,3,7,3],	[[0],0,0,0,0],	[[0],10,3,7,3]],
+		[[[0],0,0,0,0],	[[0],0,0,0,0],	[[0],2,0,0,0],	[[0],6,0,0,0]]
+	)
+@end example
+
+@end deffn
+
+@deffn {Function} padic_backsub (@var{M}, @var{p})
+
+Solves a triangularized system whose coefficients are Hensel codes, such as
+the ones returned by @code{padic_gauss}, using backward substitution in @strong{Q}@sub{p}. 
+
+@code{load("padics.mac")} loads this function.
+
+Example:
+
+@example
+(%i1)	D:matrix([3,1,3,16],[1,3,1,8],[1,1,3,12]);
+(D)	matrix(
+		[3,	1,	3,	16],
+		[1,	3,	1,	8],
+		[1,	1,	3,	12]
+	)
+(%i2)	padic_gauss(D,11);
+(%o2)	matrix(
+		[[[0],3,0,0,0],	[[0],1,0,0,0],	[[0],3,0,0,0],	[[0],5,1,0,0]],
+		[[[0],0,0,0,0],	[[0],10,3,7,3],	[[0],0,0,0,0],	[[0],10,3,7,3]],
+		[[[0],0,0,0,0],	[[0],0,0,0,0],	[[0],2,0,0,0],	[[0],6,0,0,0]]
+	)
+(%i3)	padic_backsub(%,11);
+(%o3)	[[[0],2,0,0,0],[[0],1,0,0,0],[[0],3,0,0,0]]
+(%i4)	map(lambda([x],hensel_to_farey(x,11)),%);
+(%o4)	[2,1,3]
+@end example
+
+@end deffn
+
+
+@node Function and variable index,  , Definitions for package padics, Top
+@appendix Function and variable index
+@printindex fn
+
+@bye

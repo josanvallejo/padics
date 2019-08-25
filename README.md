@@ -32,3 +32,18 @@ load("padics.mac");
 ```
 
 The file `padics-doc.pdf` describes a Maxima session using the commands in the package.
+After loading the file `padics-index.lisp`, the Maxima commands ? and ?? will find items
+in the index and display them, e.g. 
+```
+? padic_sum;
+```
+Loading via a specific path e.g. 
+```
+load("path/to/padics/padics-index.lisp")
+```
+and loading via appending the padics package directory e.g.
+```
+push("path/to/padics/###.lisp");
+load("padics-index.lisp");
+```
+both load the index and append the `padics` documentation items to the online help system.

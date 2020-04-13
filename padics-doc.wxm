@@ -924,7 +924,7 @@ If n is a quadratic residue modulo p with root x, then another root is
 given by the y such that y=-x mod p. We compute the padic roots with
 Newton's method, and the command padic_sqrt --whose syntax is
 padic_sqrt(number,p)-- admits an optional argument fixing the number
-of iterations to be done, as in padicsqrt(number,p,iterations).
+of iterations to be done, as in padic_sqrt(number,p,iterations).
    [wxMaxima: comment end   ] */
 
 
@@ -1060,12 +1060,12 @@ implemented here is Gaussian reduction.
 
 
 /* [wxMaxima: comment start ]
-To solve the problem Ax=b, we have the commands padicgauss and
-padicbacksub. The first one triangularizes the system, and its syntax
-is padicgauss(B,p), where B=A|b is the augmented matrix of the system
+To solve the problem Ax=b, we have the commands padic_gauss and
+padic_backsub. The first one triangularizes the system, and its syntax
+is padic_gauss(B,p), where B=A|b is the augmented matrix of the system
 (that is, the coefficient matrix A augmented with the column b of non
 homogeneous terms). The resulting triangular matrix is processed
-by padicbacksub to obtain the Hensel codes of the solution.
+by padic_backsub to obtain the Hensel codes of the solution.
    [wxMaxima: comment end   ] */
 
 
@@ -1090,7 +1090,7 @@ padic_backsub(%,11);
 
 
 /* [wxMaxima: comment start ]
-Converting toFarey fractions we get the rational form of the solutions:
+Converting to Farey fractions we get the rational form of the solutions:
    [wxMaxima: comment end   ] */
 
 

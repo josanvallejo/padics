@@ -82,12 +82,13 @@ we have the command `nicehensel`:
 (%o5)	.1214
 ```
 Arithmetic operations are carried using the format used by `hensel`. This example
-is taken from Limongelli and Pirastu:  1/4/(1/2+1/3)+1/25=17/50
+is taken from C. Limongelli and R. Pirastu (p-adic Arithmetic and Parallel Symbolic Computation: 
+An Implementation for Solving Linear Systems. Computers and Artificial Intelligence **14** 1 (1996) 35–62):
 ```
 (%i6)	padic_sum(padic_divide([[0],4,3,3,3],padic_sum([[0],3,2,2,2],[[0],2,3,1,3],5),5),[[-2],1,0,0,0],5);
 (%o6)	[[-2],1,4,2,2]
 ```
-A quick check that the answer is correct:
+A quick check that the answer is correct, because 1/4/(1/2+1/3)+1/25=17/50
 ```
 (%i7)	hensel(17/50,5,4);
 (%o7)	[[-2],1,4,2,2]

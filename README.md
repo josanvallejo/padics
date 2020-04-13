@@ -1,5 +1,6 @@
-# padics
-## A package for computing with p-adic numbers in Maxima CAS
+# padics: A package for computing with p-adic numbers in Maxima CAS #
+
+## Overview ##
 
 This is just a first attempt to create a Maxima package for
 working with p-adic numbers. It is extremely ugly and slow, lacking 
@@ -21,6 +22,9 @@ Topics covered are:
 `firstn` and `lastn`, which were introduced in Maxima 5.39.
 If `firstn` or `lastn` are not detected as built-in functions,
 equivalent functions are defined here.
+
+
+## Installation ##
 
 To install the package, simply copy `padics.mac` to your working
 directory, or make a global installation by copying the file to
